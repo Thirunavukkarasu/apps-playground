@@ -1,69 +1,34 @@
-import { useEffect, useState } from 'react'
-import sdk from '@stackblitz/sdk';
-import { Button } from './components/ui/button';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router'
+import Login from './pages/Login'
+import UnauthLayout from './layouts/UnauthLayout'
+import Register from './pages/Register'
+import AuthLayout from './layouts/AuthLayout'
+import Dashboard from './pages/Dashboard'
+import Settings from './pages/Settings'
+import Assignments from './pages/AssignmentsList'
+import AssignmentAttempts from './pages/AssignmentAttempts'
+import AssignmentChallenge from './pages/AssignmentChallenge'
 
 function App() {
-  useEffect(() => {
-    const project = {
-      files: {
-        'index.html': '<div id="root"></div>',
-        'index.js': `
-          import React from 'react';
-          import ReactDOM from 'react-dom';
-          import App from './App';
-
-          ReactDOM.render(<App />, document.getElementById('root'));
-        `,
-        'App.js': `
-          import React from 'react';
-
-          function App() {
-            return <h1>Hello from StackBlitz!</h1>;
-          }
-
-          export default App;
-        `,
-        'package.json': JSON.stringify({
-          dependencies: {
-            react: '^17.0.2',
-            'react-dom': '^17.0.2',
-          },
-        }),
-      },
-      title: 'React Project',
-      description: 'A simple React project',
-      template: 'create-react-app',
-    };
-
-    sdk.embedProject('embed-container', project);
-  }, []);
-
-  const onClickSave = async () => {
-    const iframe: any = document.getElementById('embed-container');
-    const vm = await sdk.connect(iframe);
-    const files = await vm.getFsSnapshot();
-    console.log(files);
-    fetch('http://localhost:3000/api/assignments/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        files
-      })
-    })
-  }
-
-  return (
-    <>
-      <h1 className='text-3xl'>Neo App</h1>
-      <div className='w-96 bg-gray-200' id="embed-container" style={{
-        height: '500px',
-        width: '100%'
-      }}></div>
-      <Button onClick={onClickSave}>Save</Button>
-    </>
-  )
+    return (
+        <Router>
+            <Routes>
+                <Route element={<UnauthLayout />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Route>
+                <Route element={<AuthLayout />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/assignments/*" element={<Assignments />} />
+                    <Route path="/assignments/:id" element={<AssignmentChallenge />} />
+                    <Route path="/attempts/*" element={<AssignmentAttempts />} />
+                    <Route path="/settings" element={<Settings />} />
+                </Route>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+            </Routes>
+        </Router>
+    )
 }
 
 export default App
+
