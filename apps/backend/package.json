@@ -1,5 +1,5 @@
 {
-  "name": "assess-api",
+  "name": "backend",
   "module": "index.ts",
   "type": "module",
   "scripts": {

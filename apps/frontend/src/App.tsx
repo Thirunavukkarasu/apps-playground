@@ -43,7 +43,7 @@ function App() {
     const vm = await sdk.connect(iframe);
     const files = await vm.getFsSnapshot();
     console.log(files);
-    fetch('http://localhost:3000/api/assessments/create', {
+    fetch('http://localhost:3000/api/assignments/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

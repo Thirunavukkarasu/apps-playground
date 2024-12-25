@@ -9,7 +9,7 @@ router.get('/list', (req, res) => {
 
 router.post('/create', (req, res) => {
     console.log(`Request Body`, req.body);
-    res.send('Created new assessment attempt');
+    res.send('Created new assignment attempt');
 });
 
 export default router;
