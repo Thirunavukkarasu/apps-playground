@@ -13,7 +13,7 @@ interface Assignment {
     testCases: string;
 }
 
-function AssignmentChallenge() {
+function AssignmentDetailPage() {
     const { id } = useParams<{ id: string }>()
     const [assignment, setAssignment] = useState<Assignment | null>(null)
     const [project, setProject] = useState<typeof assignmentProjects[0] | null>(null)
@@ -100,5 +100,5 @@ function AssignmentChallenge() {
     )
 }
 
-export default AssignmentChallenge
+export default AssignmentDetailPage
 

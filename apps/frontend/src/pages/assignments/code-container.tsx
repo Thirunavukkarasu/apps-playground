@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import sdk from '@stackblitz/sdk'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 
 interface CodeContainerProps {

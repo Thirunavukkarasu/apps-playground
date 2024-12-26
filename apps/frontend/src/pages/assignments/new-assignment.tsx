@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { AlertCircle } from 'lucide-react'
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"

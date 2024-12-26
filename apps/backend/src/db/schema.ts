@@ -1,47 +1,49 @@
-import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
+
+import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { relations } from 'drizzle-orm';
 
 // Users table
-export const users = sqliteTable('users', {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    username: text('username').notNull().unique(),
-    email: text('email').notNull().unique(),
-    passwordHash: text('password_hash').notNull(),
-    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().defaultNow(),
+export const users = pgTable('users', {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar('name').notNull().unique(),
+    age: integer().notNull(),
+    email: varchar('email').notNull().unique(),
+    passwordHash: varchar('password_hash').notNull(),
+    createdAt: timestamp('created_at').defaultNow()
 });
 
 // Templates table
-export const templates = sqliteTable('templates', {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    name: text('name').notNull(),
-    description: text('description'),
-    bucketUrl: text('bucket_url'), // URL for the JSON file in the bucket
-    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().defaultNow(),
-    updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().defaultNow(),
+export const templates = pgTable('templates', {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar('name').notNull(),
+    description: varchar('description'),
+    bucketUrl: varchar('bucket_url'), // URL for the JSON file in the bucket
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Assignments table
-export const assignments = sqliteTable('assignments', {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    title: text('title').notNull(),
-    description: text('description').notNull(),
+export const assignments = pgTable('assignments', {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    title: varchar('title').notNull(),
+    description: varchar('description').notNull(),
     templateId: integer('template_id').references(() => templates.id),
-    bucketUrl: text('bucket_url'), // URL for the JSON file in the bucket
-    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().defaultNow(),
-    updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().defaultNow(),
+    bucketUrl: varchar('bucket_url'), // URL for the JSON file in the bucket
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Assignment attempts table
-export const assignmentAttempts = sqliteTable('assignment_attempts', {
-    id: integer('id').primaryKey({ autoIncrement: true }),
+export const assignmentAttempts = pgTable('assignment_attempts', {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
     assignmentId: integer('assignment_id').notNull().references(() => assignments.id),
     userId: integer('user_id').notNull().references(() => users.id),
-    status: text('status').notNull(), // e.g., 'submitted', 'graded'
+    status: varchar('status').notNull(), // e.g., 'submitted', 'graded'
     score: integer('score'),
-    feedback: text('feedback'),
-    bucketUrl: text('bucket_url'), // URL for the JSON file in the bucket
-    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().defaultNow(),
-    updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().defaultNow(),
+    feedback: varchar('feedback'),
+    bucketUrl: varchar('bucket_url'), // URL for the JSON file in the bucket
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Relations
