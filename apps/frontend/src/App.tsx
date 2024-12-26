@@ -9,6 +9,9 @@ import Assignments from './pages/assignments/assignments-list'
 import AssignmentAttempts from './pages/assignment-attempts'
 import AssignmentChallenge from './pages/assignments/assignment-challenge'
 import NewAssignment from './pages/assignments/new-assignment'
+import Templates from './pages/template/templates-list'
+import TemplateDetailPage from './pages/template/template-detail-page'
+import NewTemplate from './pages/template/new-template'
 
 function App() {
     return (
@@ -20,6 +23,9 @@ function App() {
                 </Route>
                 <Route element={<AuthLayout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/templates" element={<Templates />} />
+                    <Route path="/templates/:id" element={<TemplateDetailPage />} />
+                    <Route path="/templates/new" element={<NewTemplate />} />
                     <Route path="/assignments" element={<Assignments />} />
                     <Route path="/assignments/new" element={<NewAssignment />} />
                     <Route path="/assignments/:id" element={<AssignmentChallenge />} />

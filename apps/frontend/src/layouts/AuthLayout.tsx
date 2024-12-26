@@ -27,6 +27,12 @@ function AuthLayout() {
                                 Dashboard
                             </Button>
                         </Link>
+                        <Link to="/templates">
+                            <Button variant="ghost" className="w-full justify-start">
+                                <Home className="mr-2 h-4 w-4" />
+                                Templates
+                            </Button>
+                        </Link>
                         <Link to="/assignments">
                             <Button variant="ghost" className="w-full justify-start">
                                 <Home className="mr-2 h-4 w-4" />

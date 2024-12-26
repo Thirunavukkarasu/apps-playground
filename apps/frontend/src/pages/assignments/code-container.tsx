@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast"
 
 interface CodeContainerProps {
   project: {
+    id?: string;
     files: { [key: string]: string };
     title: string;
     description: string;

@@ -103,7 +103,7 @@ function AssignmentsList() {
                   </TableCell>
                   <TableCell>
                     <Button asChild>
-                      <Link to={`/assignments/${assignment.id}`}>Start Challenge</Link>
+                      <Link to={`/assignments/${assignment.id}`}>View</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
