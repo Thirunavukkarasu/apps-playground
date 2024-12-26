@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import sdk from '@stackblitz/sdk'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,25 +10,37 @@ interface CodeContainerProps {
     title: string;
     description: string;
     dependencies: { [key: string]: string };
+    openFile?: string;
+    height?: number;
+    width?: string;
+    initScripts?: string;
   };
 }
 
 function CodeContainer({ project }: CodeContainerProps) {
   const { toast } = useToast()
+  const containerRef = useRef<any>(null)
+
+  const _embedSDK = async () => {
+    return sdk.embedProject(
+      containerRef.current,
+      {
+        files: project.files,
+        template: 'create-react-app' as const,
+        title: project.title ?? `My First Docs!`,
+        description: project.description ?? `This is an example of my first doc!`,
+      },
+      {
+        openFile: project?.openFile ?? 'README.md',
+        height: project?.height ?? 800,
+        width: project.width ?? '100%',
+        startScript: project.initScripts,
+      }
+    )
+  }
 
   useEffect(() => {
-    const stackblitzProject = {
-      files: project.files,
-      title: project.title,
-      description: project.description,
-      template: 'create-react-app' as const,
-      dependencies: project.dependencies,
-    };
-
-    sdk.embedProject('embed-container', stackblitzProject, {
-      height: 500,
-      clickToLoad: false,
-    });
+    _embedSDK()
   }, [project]);
 
 
@@ -38,7 +50,7 @@ function CodeContainer({ project }: CodeContainerProps) {
       const vm = await sdk.connect(iframe)
       const files: any = await vm.getFsSnapshot()
 
-      await saveToMinioViaAPI(files)
+      await saveToBucket(files)
     } catch (error) {
       console.error('Error getting files:', error)
       toast({
@@ -49,7 +61,7 @@ function CodeContainer({ project }: CodeContainerProps) {
     }
   }
 
-  const saveToMinioViaAPI = async (files: { [key: string]: string }) => {
+  const saveToBucket = async (files: { [key: string]: string }) => {
     try {
       const response = await fetch('http://localhost:3000/api/assignments/save', {
         method: 'POST',
@@ -78,17 +90,15 @@ function CodeContainer({ project }: CodeContainerProps) {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{project.title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div id="embed-container" className="w-full h-[500px] border border-gray-200 rounded-md overflow-hidden"></div>
-      </CardContent>
-      <CardFooter>
-        <Button onClick={onClickSave}>Save Code</Button>
-      </CardFooter>
-    </Card>
+    <>
+      <div
+        id="embed-container"
+        ref={containerRef}
+      >
+      </div>
+
+      <Button onClick={onClickSave}>Save Code</Button>
+    </>
   )
 }
 

@@ -62,48 +62,57 @@ function AssignmentsList() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Assignments</CardTitle>
-        <CardDescription>Improve your coding skills with these coding challenges</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Difficulty</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {assignments.map((assignment) => (
-              <TableRow key={assignment.id}>
-                <TableCell className="font-medium">{assignment.title}</TableCell>
-                <TableCell>{assignment.description}</TableCell>
-                <TableCell>
-                  <Badge className={getDifficultyColor(assignment.difficulty)}>
-                    {assignment.difficulty}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(assignment.status)}>
-                    {assignment.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Button asChild>
-                    <Link to={`/assignments/${assignment.id}`}>Start Challenge</Link>
-                  </Button>
-                </TableCell>
+    <div>
+      <div className='flex flex-row items-center justify-between mb-10'>
+        <div>
+          <h1 className='text-2xl font-semibold'>Assignments</h1>
+          <p className='text-sm'>Improve your coding skills with these coding challenges</p>
+        </div>
+        <div>
+          <Button asChild>
+            <Link to="/assignments/new">Create Assignment</Link>
+          </Button>
+        </div>
+      </div>
+      <Card>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Difficulty</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {assignments.map((assignment) => (
+                <TableRow key={assignment.id}>
+                  <TableCell className="font-medium">{assignment.title}</TableCell>
+                  <TableCell>{assignment.description}</TableCell>
+                  <TableCell>
+                    <Badge className={getDifficultyColor(assignment.difficulty)}>
+                      {assignment.difficulty}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(assignment.status)}>
+                      {assignment.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button asChild>
+                      <Link to={`/assignments/${assignment.id}`}>Start Challenge</Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

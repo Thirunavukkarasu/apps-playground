@@ -3,8 +3,8 @@ import { useParams } from 'react-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import CodeContainer from '../CodeContainer'
-import { assignmentProjects } from '../data/assignmentProjects'
+import CodeContainer from './code-container'
+import { assignmentProjects } from '@/data/assignmentProjects'
 
 interface Assignment {
     id: string;
