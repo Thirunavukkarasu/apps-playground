@@ -1,0 +1,28 @@
+{
+  "name": "mcp-server",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start:sse": "bun run src/sse-server.ts",
+    "start:stdio": "bun run src/stdio-server.ts",
+    "dev:sse": "bun run src/sse-server.ts --watch",
+    "dev:stdio": "bun run src/stdio-server.ts --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "uuid": "^9.0.1",
+    "zod": "^3.25.56"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
