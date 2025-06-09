@@ -173,13 +173,13 @@ export default async function getTools() {
     console.log("MCP Tools:", mcpTools)
     // Combine MCP tools with our custom API-based tools
     return {
-        ...mcpTools, // External MCP tools (if available)
-        // listCustomers,
-        // getOverdueCustomers,
-        // getCustomerDetails,
-        // sendCustomerReminders,
-        // generateReport,
-        // recommendAction,
+        // ...mcpTools, // External MCP tools (if available)
+        listCustomers,
+        getOverdueCustomers,
+        getCustomerDetails,
+        sendCustomerReminders,
+        generateReport,
+        recommendAction,
     }
 }
 
