@@ -1,4 +1,4 @@
-import type { IContentStorage, ContentData } from './index';
+import type { IContentStorage, ContentData } from '@/types';
 
 interface CloudStorageConfig {
     provider: string;
@@ -180,7 +180,13 @@ export class CloudStorage implements IContentStorage {
             });
 
             const contents = await Promise.all(contentPromises);
-            return contents.filter(content => content !== null) as ContentData[];
+            const validContents = contents.filter((content: ContentData | null) => content !== null) as ContentData[];
+            // Sort by createdAt date, newest first
+            return validContents.sort((a, b) => {
+                const dateA = new Date(a.createdAt || 0);
+                const dateB = new Date(b.createdAt || 0);
+                return dateB.getTime() - dateA.getTime();
+            });
         } catch (error) {
             console.error('Failed to list content from cloud storage:', error);
             throw error;

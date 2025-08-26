@@ -116,7 +116,7 @@ export const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
           <h4 className="text-lg font-medium text-gray-900">Answer Options</h4>
           <button
             onClick={addAnswer}
-            className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
+            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
           >
             Add Answer
           </button>
@@ -155,7 +155,7 @@ export const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
               {answers.length > 1 && (
                 <button
                   onClick={() => removeAnswer(index)}
-                  className="px-2 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+                  className="px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
                 >
                   Remove
                 </button>

@@ -81,6 +81,25 @@ h5pApp.get("/editor/:contentId", async (c) => {
     }
 });
 
+// Get content metadata
+h5pApp.get("/content/:contentId", async (c) => {
+    const { contentId } = c.req.param();
+
+    try {
+        // Get content from our custom storage
+        const contentData = await customContentStorage.getContent(contentId);
+        if (contentData) {
+            return c.json(contentData);
+        }
+
+        // Return 404 if content not found
+        return c.json({ error: "Content not found" }, 404);
+    } catch (error) {
+        console.error('Error getting content:', error);
+        return c.json({ error: "Failed to get content" }, 500);
+    }
+});
+
 // Save content
 h5pApp.post("/editor/:contentId", async (c) => {
     const { contentId } = c.req.param();
@@ -192,6 +211,51 @@ h5pApp.get("/libraries", async (c) => {
     } catch (error) {
         console.error('Error getting libraries:', error);
         return c.json([]);
+    }
+});
+
+// Get full content data for editing (must come before /content)
+h5pApp.get("/content/:contentId/full", async (c) => {
+    const { contentId } = c.req.param();
+
+    try {
+        const contentData = await customContentStorage.getContent(contentId);
+        if (contentData) {
+            return c.json({
+                ok: true,
+                data: contentData
+            });
+        } else {
+            return c.json({
+                ok: false,
+                error: "Content not found"
+            }, 404);
+        }
+    } catch (error) {
+        console.error('Error getting full content:', error);
+        return c.json({
+            ok: false,
+            error: "Failed to retrieve content"
+        }, 500);
+    }
+});
+
+// Delete content
+h5pApp.delete("/content/:contentId", async (c) => {
+    const { contentId } = c.req.param();
+
+    try {
+        await customContentStorage.deleteContent(contentId);
+        return c.json({
+            ok: true,
+            message: "Content deleted successfully"
+        });
+    } catch (error) {
+        console.error('Error deleting content:', error);
+        return c.json({
+            ok: false,
+            error: "Failed to delete content"
+        }, 500);
     }
 });
 

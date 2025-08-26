@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>H5P Iframe Embed Example</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .iframe-container {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .iframe-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      .responsive-iframe {
+        aspect-ratio: 16/9;
+        width: 100%;
+        max-width: 800px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">
+            H5P Content Embedding Examples
+          </h1>
+          <p class="text-lg text-gray-600">
+            Learn how to embed H5P content in your websites using iframes
+          </p>
+        </div>
+
+        <!-- Content Selection -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            Select Content to Embed
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="contentId"
+                class="block text-sm font-medium text-gray-700 mb-2"
+                >Content ID:</label
+              >
+              <input
+                type="text"
+                id="contentId"
+                value="mc-test-1"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter content ID (e.g., mc-test-1)"
+              />
+            </div>
+            <div>
+              <label
+                for="iframeHeight"
+                class="block text-sm font-medium text-gray-700 mb-2"
+                >Iframe Height:</label
+              >
+              <select
+                id="iframeHeight"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="400">400px</option>
+                <option value="500">500px</option>
+                <option value="600" selected>600px</option>
+                <option value="700">700px</option>
+                <option value="800">800px</option>
+              </select>
+            </div>
+          </div>
+          <button
+            onclick="updateIframe()"
+            class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Update Iframe
+          </button>
+        </div>
+
+        <!-- Fixed Height Iframe Example -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            Fixed Height Iframe
+          </h2>
+          <p class="text-gray-600 mb-4">
+            This iframe has a fixed height and will show scrollbars if content
+            is larger.
+          </p>
+
+          <div class="iframe-container" id="fixedIframeContainer">
+            <iframe
+              id="fixedIframe"
+              src="embed.html?contentId=mc-test-1"
+              title="H5P Content"
+              allowfullscreen
+            ></iframe>
+          </div>
+
+          <div class="mt-4 p-4 bg-gray-50 rounded-md">
+            <h3 class="font-medium text-gray-900 mb-2">HTML Code:</h3>
+            <pre
+              class="text-sm text-gray-700 bg-white p-3 rounded border overflow-x-auto"
+            ><code>&lt;iframe 
+    src="http://localhost:5173/embed.html?contentId=mc-test-1"
+    width="100%" 
+    height="600" 
+    title="H5P Content"
+    allowfullscreen&gt;
+&lt;/iframe&gt;</code></pre>
+          </div>
+        </div>
+
+        <!-- Responsive Iframe Example -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            Responsive Iframe
+          </h2>
+          <p class="text-gray-600 mb-4">
+            This iframe uses aspect ratio and will resize with the viewport.
+          </p>
+
+          <div class="responsive-iframe">
+            <iframe
+              src="embed.html?contentId=mc-test-1"
+              title="H5P Content"
+              allowfullscreen
+              style="
+                width: 100%;
+                height: 100%;
+                border: none;
+                border-radius: 8px;
+              "
+            ></iframe>
+          </div>
+
+          <div class="mt-4 p-4 bg-gray-50 rounded-md">
+            <h3 class="font-medium text-gray-900 mb-2">HTML Code:</h3>
+            <pre
+              class="text-sm text-gray-700 bg-white p-3 rounded border overflow-x-auto"
+            ><code>&lt;div style="aspect-ratio: 16/9; width: 100%; max-width: 800px;"&gt;
+    &lt;iframe 
+        src="http://localhost:5173/embed.html?contentId=mc-test-1"
+        title="H5P Content"
+        allowfullscreen
+        style="width: 100%; height: 100%; border: none;"&gt;
+    &lt;/iframe&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+
+        <!-- Dynamic Iframe Example -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            Dynamic Iframe with JavaScript
+          </h2>
+          <p class="text-gray-600 mb-4">
+            This example shows how to dynamically create and update iframes
+            using JavaScript.
+          </p>
+
+          <div id="dynamicIframeContainer" class="iframe-container">
+            <iframe
+              id="dynamicIframe"
+              src="embed.html?contentId=mc-test-1"
+              title="H5P Content"
+              allowfullscreen
+            ></iframe>
+          </div>
+
+          <div class="mt-4 p-4 bg-gray-50 rounded-md">
+            <h3 class="font-medium text-gray-900 mb-2">JavaScript Code:</h3>
+            <pre
+              class="text-sm text-gray-700 bg-white p-3 rounded border overflow-x-auto"
+            ><code>function updateIframe() {
+    const contentId = document.getElementById('contentId').value;
+    const height = document.getElementById('iframeHeight').value;
+    
+    const iframe = document.getElementById('dynamicIframe');
+    iframe.src = `embed.html?contentId=${contentId}`;
+    iframe.style.height = `${height}px`;
+}
+
+// Listen for iframe resize messages
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'H5P_IFRAME_RESIZE') {
+        const iframe = document.getElementById('dynamicIframe');
+        iframe.style.height = `${event.data.height}px`;
+    }
+});</code></pre>
+          </div>
+        </div>
+
+        <!-- Embedding Guidelines -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h2 class="text-xl font-semibold text-blue-900 mb-4">
+            📋 Embedding Guidelines
+          </h2>
+          <div class="space-y-4 text-blue-800">
+            <div>
+              <h3 class="font-medium">1. CORS Configuration</h3>
+              <p class="text-sm">
+                The backend is already configured with CORS to allow iframe
+                embedding from any origin.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">2. URL Structure</h3>
+              <p class="text-sm">
+                Use:
+                <code class="bg-blue-100 px-2 py-1 rounded"
+                  >http://localhost:5173/embed.html?contentId=YOUR_CONTENT_ID</code
+                >
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">3. Content IDs</h3>
+              <p class="text-sm">
+                Available content IDs: mc-test-1, flashcards-example-1,
+                blanks-example-1, drag-drop-example-1, frontend-test-123
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">4. Responsive Design</h3>
+              <p class="text-sm">
+                The embed page is fully responsive and will adapt to different
+                screen sizes.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">5. Error Handling</h3>
+              <p class="text-sm">
+                The embed page includes proper error handling for invalid
+                content IDs or network issues.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Considerations -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mt-8">
+          <h2 class="text-xl font-semibold text-yellow-900 mb-4">
+            ⚠️ Production Considerations
+          </h2>
+          <div class="space-y-4 text-yellow-800">
+            <div>
+              <h3 class="font-medium">1. Domain Configuration</h3>
+              <p class="text-sm">
+                Update the API base URL in embed.html to point to your
+                production server.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">2. HTTPS Required</h3>
+              <p class="text-sm">
+                For production, ensure both the parent page and iframe use
+                HTTPS.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">3. Content Security Policy</h3>
+              <p class="text-sm">
+                Configure CSP headers to allow iframe embedding from your
+                domain.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-medium">4. Performance</h3>
+              <p class="text-sm">
+                Consider lazy loading iframes for better page performance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function updateIframe() {
+        const contentId = document.getElementById("contentId").value;
+        const height = document.getElementById("iframeHeight").value;
+
+        // Update fixed iframe
+        const fixedIframe = document.getElementById("fixedIframe");
+        fixedIframe.src = `embed.html?contentId=${contentId}`;
+
+        // Update dynamic iframe
+        const dynamicIframe = document.getElementById("dynamicIframe");
+        dynamicIframe.src = `embed.html?contentId=${contentId}`;
+
+        // Update container height
+        const container = document.getElementById("fixedIframeContainer");
+        container.style.height = `${height}px`;
+      }
+
+      // Listen for iframe resize messages
+      window.addEventListener("message", (event) => {
+        if (event.data.type === "H5P_IFRAME_RESIZE") {
+          const iframe = document.getElementById("dynamicIframe");
+          if (iframe) {
+            iframe.style.height = `${event.data.height}px`;
+          }
+        }
+      });
+
+      // Initialize with default content
+      document.addEventListener("DOMContentLoaded", () => {
+        updateIframe();
+      });
+    </script>
+  </body>
+</html>

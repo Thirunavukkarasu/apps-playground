@@ -2,12 +2,24 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { H5PContent, H5PPlayerData } from '../types';
 
+// Type for editor data structure
+interface EditorData {
+    mock?: boolean;
+    message?: string;
+    contentId: string;
+    editor?: {
+        title: string;
+        library: string;
+        params: Record<string, unknown>;
+    };
+}
+
 const API_BASE_URL = "http://localhost:3000";
 
 export const useContent = () => {
     const [contents, setContents] = useState<H5PContent[]>([]);
     const [selectedContent, setSelectedContent] = useState<string>("");
-    const [editorData, setEditorData] = useState<Record<string, unknown> | null>(null);
+    const [editorData, setEditorData] = useState<EditorData | null>(null);
     const [playerData, setPlayerData] = useState<H5PPlayerData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>("");
@@ -19,7 +31,13 @@ export const useContent = () => {
             setError("");
 
             const response = await axios.get(`${API_BASE_URL}/h5p/content`);
-            setContents(response.data);
+            // Sort by createdAt date, newest first (fallback in case backend doesn't sort)
+            const sortedContents = response.data.sort((a: H5PContent, b: H5PContent) => {
+                const dateA = new Date(a.createdAt || 0);
+                const dateB = new Date(b.createdAt || 0);
+                return dateB.getTime() - dateA.getTime();
+            });
+            setContents(sortedContents);
 
             if (response.data.length > 0 && !selectedContent) {
                 setSelectedContent(response.data[0].id);
@@ -179,6 +197,35 @@ export const useContent = () => {
         }
     };
 
+    // Delete content
+    const deleteContent = async (contentId: string) => {
+        try {
+            setLoading(true);
+            setError("");
+
+            const response = await axios.delete(
+                `${API_BASE_URL}/h5p/content/${contentId}`
+            );
+
+            if (response.status === 200) {
+                // Refresh content list
+                await loadContentList();
+
+                // Clear selection if the deleted content was selected
+                if (selectedContent === contentId) {
+                    setSelectedContent("");
+                }
+            } else {
+                setError("Failed to delete content");
+            }
+        } catch (err) {
+            setError("Failed to delete content");
+            console.error("Error deleting content:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Load existing content on component mount
     useEffect(() => {
         loadContentList();
@@ -196,5 +243,6 @@ export const useContent = () => {
         createContent,
         loadEditorData,
         loadPlayerData,
+        deleteContent,
     };
 };

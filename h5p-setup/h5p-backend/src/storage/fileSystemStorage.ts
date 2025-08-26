@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import type { IContentStorage, ContentData } from './index';
+import type { IContentStorage, ContentData } from '@/types';
 
 export class FileSystemStorage implements IContentStorage {
     private contentDir: string;
@@ -70,8 +70,14 @@ export class FileSystemStorage implements IContentStorage {
 
                 Promise.all(contentPromises)
                     .then(contents => {
-                        const validContents = contents.filter(content => content !== null) as ContentData[];
-                        resolve(validContents);
+                        const validContents = contents.filter((content: ContentData | null) => content !== null) as ContentData[];
+                        // Sort by createdAt date, newest first
+                        const sortedContents = validContents.sort((a, b) => {
+                            const dateA = new Date(a.createdAt || 0);
+                            const dateB = new Date(b.createdAt || 0);
+                            return dateB.getTime() - dateA.getTime();
+                        });
+                        resolve(sortedContents);
                     })
                     .catch(reject);
             });

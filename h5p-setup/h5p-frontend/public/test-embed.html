@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>H5P Embed Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold text-gray-900 mb-8">H5P Embed Test</h1>
+
+      <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4">Test 1: Direct Embed</h2>
+        <iframe
+          src="embed.html?contentId=mc-test-1"
+          width="100%"
+          height="500"
+          title="H5P Content"
+          allowfullscreen
+          style="border: 2px solid #e5e7eb; border-radius: 8px"
+        >
+        </iframe>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4">Test 2: Responsive Embed</h2>
+        <div style="aspect-ratio: 16/9; width: 100%; max-width: 800px">
+          <iframe
+            src="embed.html?contentId=mc-test-1"
+            title="H5P Content"
+            allowfullscreen
+            style="width: 100%; height: 100%; border: none; border-radius: 8px"
+          >
+          </iframe>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">
+          Test 3: Different Content Types
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h3 class="font-medium mb-2">Multiple Choice</h3>
+            <iframe
+              src="embed.html?contentId=mc-test-1"
+              width="100%"
+              height="300"
+              title="Multiple Choice"
+              style="border: 1px solid #e5e7eb; border-radius: 4px"
+            >
+            </iframe>
+          </div>
+          <div>
+            <h3 class="font-medium mb-2">Flashcards</h3>
+            <iframe
+              src="embed.html?contentId=flashcards-example-1"
+              width="100%"
+              height="300"
+              title="Flashcards"
+              style="border: 1px solid #e5e7eb; border-radius: 4px"
+            >
+            </iframe>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 class="font-semibold text-blue-900 mb-2">Debug Information</h3>
+        <p class="text-blue-800 text-sm">
+          If you're seeing JSON data instead of content, check the browser
+          console for errors. The embed page should show interactive previews of
+          the H5P content.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Add some debugging
+      console.log("H5P Embed Test Page Loaded");
+
+      // Check if iframes are loading
+      document.querySelectorAll("iframe").forEach((iframe, index) => {
+        iframe.onload = () => {
+          console.log(`Iframe ${index + 1} loaded successfully`);
+        };
+        iframe.onerror = () => {
+          console.error(`Iframe ${index + 1} failed to load`);
+        };
+      });
+    </script>
+  </body>
+</html>

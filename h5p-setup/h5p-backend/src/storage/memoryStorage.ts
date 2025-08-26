@@ -1,4 +1,4 @@
-import type { IContentStorage, ContentData } from './index';
+import type { IContentStorage, ContentData } from '@/types';
 
 export class MemoryStorage implements IContentStorage {
     private storage: Map<string, ContentData> = new Map();
@@ -12,7 +12,13 @@ export class MemoryStorage implements IContentStorage {
     }
 
     async listContent(): Promise<ContentData[]> {
-        return Array.from(this.storage.values());
+        const contents = Array.from(this.storage.values());
+        // Sort by createdAt date, newest first
+        return contents.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateB.getTime() - dateA.getTime();
+        });
     }
 
     async deleteContent(contentId: string): Promise<void> {
