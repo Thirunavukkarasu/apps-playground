@@ -190,7 +190,7 @@ export const Navbar: React.FC = () => {
 
             {/* Documentation Link */}
             <a
-              href="https://github.com/Thirunavukkarasu/js-kitchen-sink/tree/main/h5p-setup"
+              href="https://github.com/Thirunavukkarasu/apps-playground/tree/main/h5p-setup"
               target="_blank"
               rel="noopener noreferrer"
               className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors flex items-center space-x-2"
