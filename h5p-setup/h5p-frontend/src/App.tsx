@@ -128,6 +128,82 @@ function App() {
     }
   };
 
+  // Render Fill in the Blanks text with input fields
+  const renderFillInBlanksText = (text: string) => {
+    // Simple regex to find blanks marked with *** or ___ or similar patterns
+    const blankPattern = /\*\*\*|___|\[\[.*?\]\]/g;
+    const parts = text.split(blankPattern);
+
+    return (
+      <div className="text-gray-800 leading-relaxed">
+        {parts.map((part, index) => (
+          <span key={index}>
+            {part}
+            {index < parts.length - 1 && (
+              <input
+                type="text"
+                className="mx-1 px-2 py-1 border border-gray-300 rounded text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Answer"
+                data-blank-index={index}
+              />
+            )}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  // Check answers for Fill in the Blanks
+  const checkBlanksAnswers = () => {
+    const inputs = document.querySelectorAll("input[data-blank-index]");
+    const resultDiv = document.getElementById("blanks-result");
+
+    if (!resultDiv) return;
+
+    let correctAnswers = 0;
+    const totalBlanks = inputs.length;
+
+    // For demo purposes, we'll use some sample correct answers
+    // In a real implementation, these would come from the H5P content data
+    const sampleCorrectAnswers = [
+      "interactive",
+      "content",
+      "learning",
+      "experience",
+    ];
+
+    inputs.forEach((input, index) => {
+      const userAnswer = (input as HTMLInputElement).value.trim().toLowerCase();
+      const correctAnswer = sampleCorrectAnswers[index] || "demo";
+
+      if (userAnswer === correctAnswer) {
+        correctAnswers++;
+        input.classList.add("border-green-500", "bg-green-50");
+        input.classList.remove("border-red-500", "bg-red-50");
+      } else {
+        input.classList.add("border-red-500", "bg-red-50");
+        input.classList.remove("border-green-500", "bg-green-50");
+      }
+    });
+
+    const percentage = Math.round((correctAnswers / totalBlanks) * 100);
+
+    resultDiv.innerHTML = `
+      <div class="text-center">
+        <p class="text-lg font-semibold ${
+          percentage >= 80 ? "text-green-600" : "text-red-600"
+        }">
+          ${correctAnswers} out of ${totalBlanks} correct (${percentage}%)
+        </p>
+        <p class="text-sm text-gray-600 mt-1">
+          ${percentage >= 80 ? "Great job!" : "Keep trying!"}
+        </p>
+      </div>
+    `;
+
+    resultDiv.classList.remove("hidden");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -272,15 +348,60 @@ function App() {
                           {(playerData as any).data?.title ||
                             "Untitled Content"}
                         </h4>
-                        {(playerData as any).data?.parameters?.text && (
-                          <div
-                            className="prose max-w-none"
-                            dangerouslySetInnerHTML={{
-                              __html: (playerData as any).data.parameters
-                                .text as string,
-                            }}
-                          />
+                        {/* Fill in the Blanks Content */}
+                        {(playerData as any).data?.mainLibrary ===
+                          "H5P.Blanks 1.14" && (
+                          <div className="h5p-blanks-content">
+                            {(playerData as any).data?.parameters?.title && (
+                              <h5 className="text-xl font-semibold text-gray-800 mb-2">
+                                {(playerData as any).data.parameters.title}
+                              </h5>
+                            )}
+                            {(playerData as any).data?.parameters
+                              ?.description && (
+                              <p className="text-gray-600 mb-4">
+                                {
+                                  (playerData as any).data.parameters
+                                    .description
+                                }
+                              </p>
+                            )}
+                            {(playerData as any).data?.parameters?.text && (
+                              <div className="fill-in-blanks-text">
+                                {renderFillInBlanksText(
+                                  (playerData as any).data.parameters.text
+                                )}
+                              </div>
+                            )}
+                            <button
+                              onClick={() => checkBlanksAnswers()}
+                              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                              Check Answers
+                            </button>
+                            <div
+                              id="blanks-result"
+                              className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg hidden"
+                            >
+                              <p className="text-blue-800 font-medium">
+                                Results will appear here
+                              </p>
+                            </div>
+                          </div>
                         )}
+
+                        {/* Regular Text Content */}
+                        {(playerData as any).data?.mainLibrary ===
+                          "H5P.Text 1.1" &&
+                          (playerData as any).data?.parameters?.text && (
+                            <div
+                              className="prose max-w-none"
+                              dangerouslySetInnerHTML={{
+                                __html: (playerData as any).data.parameters
+                                  .text as string,
+                              }}
+                            />
+                          )}
                         <div className="mt-4 text-sm text-gray-500">
                           <p>
                             Library: {(playerData as any).data?.mainLibrary}

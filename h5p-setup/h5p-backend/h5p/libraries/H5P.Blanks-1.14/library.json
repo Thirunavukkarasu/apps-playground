@@ -1,0 +1,45 @@
+{
+  "title": "Fill in the Blanks",
+  "description": "Create a task with missing words in a text. The learner fills in the missing words. H5P Fill in the Blanks allows you to create a task with missing words in a text. The learner fills in the missing words. You can specify a list of words for each gap.",
+  "majorVersion": 1,
+  "minorVersion": 14,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "Joubel",
+  "license": "MIT",
+  "machineName": "H5P.Blanks",
+  "preloadedJs": [
+    {
+      "path": "js/blanks.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/blanks.css"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "H5P.JoubelUI",
+      "majorVersion": 1,
+      "minorVersion": 3
+    },
+    {
+      "machineName": "H5P.Question",
+      "majorVersion": 1,
+      "minorVersion": 5
+    },
+    {
+      "machineName": "H5P.FontIcons",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.Blanks",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "blanks-example-1",
+  "title": "Fill in the Blanks - Basic English",
+  "parameters": {
+    "title": "Fill in the Blanks Exercise",
+    "description": "Complete the sentences with the correct words.",
+    "text": "The *sun/sun* rises in the *east/east* and sets in the *west/west*. The *moon/moon* appears at *night/night* and the *stars/stars* twinkle in the *sky/sky*."
+  },
+  "mainLibrary": "H5P.Blanks 1.14",
+  "metadata": {
+    "title": "Fill in the Blanks - Basic English",
+    "language": "en",
+    "mainLibrary": "H5P.Blanks 1.14",
+    "preloadedDependencies": [
+      {
+        "machineName": "H5P.Text",
+        "majorVersion": 1,
+        "minorVersion": 1
+      }
+    ],
+    "embedTypes": [
+      "div"
+    ],
+    "license": "U",
+    "defaultLanguage": "en",
+    "authors": [
+      {
+        "name": "Default Author",
+        "role": "Author"
+      }
+    ],
+    "licenseVersion": "4.0",
+    "yearFrom": "2025",
+    "yearTo": "2025",
+    "changes": [],
+    "contentType": "Text"
+  },
+  "createdAt": "2025-08-26T15:32:45.908Z",
+  "updatedAt": "2025-08-26T15:32:45.908Z"
+}
