@@ -23,10 +23,11 @@ function App() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            H5P Content Manager
+            H5P Authoring Studio
           </h1>
           <p className="text-gray-600">
-            Create and manage interactive H5P content
+            Create, edit, and manage interactive H5P content with powerful
+            authoring tools
           </p>
         </div>
 

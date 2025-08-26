@@ -1,16 +1,15 @@
 import React from "react";
-import type { H5PPlayerData, H5PContent, H5PAnswer } from "../types";
+import type { H5PPlayerData } from "../types";
+import type { MultipleChoiceContent } from "../schemas/h5pSchemas";
 
 interface MultipleChoiceViewerProps {
   playerData: H5PPlayerData;
-  contents: H5PContent[];
-  selectedContent: string;
+  currentContent: MultipleChoiceContent;
 }
 
 export const MultipleChoiceViewer: React.FC<MultipleChoiceViewerProps> = ({
   playerData,
-  contents,
-  selectedContent,
+  currentContent,
 }) => {
   const question = playerData.data?.parameters?.question;
   const answers = playerData.data?.parameters?.answers || [];
@@ -25,15 +24,14 @@ export const MultipleChoiceViewer: React.FC<MultipleChoiceViewerProps> = ({
     let userCorrect = 0;
 
     // Get the answers data from the current content
-    const currentContent = contents.find((c) => c.id === selectedContent);
-    if (!currentContent || !currentContent.parameters?.answers) {
+    if (!currentContent || !currentContent.parameters.answers) {
       resultDiv.innerHTML =
         '<p class="text-red-600">Error: Could not load answer data</p>';
       resultDiv.classList.remove("hidden");
       return;
     }
 
-    const answers = currentContent.parameters.answers as H5PAnswer[];
+    const answers = currentContent.parameters.answers;
 
     checkboxes.forEach((checkbox, index) => {
       const isSelected = (checkbox as HTMLInputElement).checked;

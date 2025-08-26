@@ -1,13 +1,5 @@
-// H5P Content interface
-export interface H5PContent {
-    id: string;
-    title: string;
-    mainLibrary?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    parameters?: Record<string, unknown>;
-    metadata?: Record<string, unknown>;
-}
+// Import H5PContent type from Zod schema to avoid duplication
+export type { H5PContent } from '../schemas/h5pSchemas';
 
 // H5P Answer interface for multiple choice questions
 export interface H5PAnswer {
