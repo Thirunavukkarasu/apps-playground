@@ -1,0 +1,46 @@
+{
+  "id": "content_1756231330575",
+  "title": "New H5P Content",
+  "parameters": {
+    "introPage": {
+      "showIntroPage": true,
+      "title": "Welcome to H5P",
+      "showStartButton": true,
+      "startButtonText": "Start"
+    },
+    "progressType": "dots",
+    "passPercentage": 80,
+    "questions": []
+  },
+  "mainLibrary": "H5P.Text 1.1",
+  "metadata": {
+    "title": "New H5P Content",
+    "language": "en",
+    "mainLibrary": "H5P.Text 1.1",
+    "preloadedDependencies": [
+      {
+        "machineName": "H5P.Text",
+        "majorVersion": 1,
+        "minorVersion": 1
+      }
+    ],
+    "embedTypes": [
+      "div"
+    ],
+    "license": "U",
+    "defaultLanguage": "en",
+    "authors": [
+      {
+        "name": "Default Author",
+        "role": "Author"
+      }
+    ],
+    "licenseVersion": "4.0",
+    "yearFrom": "2025",
+    "yearTo": "2025",
+    "changes": [],
+    "contentType": "Text"
+  },
+  "createdAt": "2025-08-26T18:02:10.580Z",
+  "updatedAt": "2025-08-26T18:02:10.580Z"
+}

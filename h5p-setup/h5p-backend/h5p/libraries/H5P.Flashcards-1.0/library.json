@@ -1,0 +1,88 @@
+{
+  "title": "Flashcards",
+  "description": "Create interactive flashcards with front and back content.",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "H5P",
+  "license": "MIT",
+  "machineName": "H5P.Flashcards",
+  "preloadedJs": [
+    {
+      "path": "js/flashcards.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/flashcards.css"
+    }
+  ],
+  "semantics": [
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "description": "Title for the flashcard set",
+      "default": "Flashcards"
+    },
+    {
+      "name": "description",
+      "type": "text",
+      "label": "Description",
+      "description": "Description of the flashcard set",
+      "default": "Interactive flashcards for learning"
+    },
+    {
+      "name": "cards",
+      "type": "list",
+      "label": "Flashcards",
+      "description": "Add flashcards to your set",
+      "entity": "card",
+      "field": {
+        "name": "card",
+        "type": "group",
+        "label": "Flashcard",
+        "fields": [
+          {
+            "name": "front",
+            "type": "text",
+            "label": "Front",
+            "description": "Content for the front of the card",
+            "default": "Question or term"
+          },
+          {
+            "name": "back",
+            "type": "text",
+            "label": "Back",
+            "description": "Content for the back of the card",
+            "default": "Answer or definition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "showProgress",
+      "type": "boolean",
+      "label": "Show Progress",
+      "description": "Show progress indicator",
+      "default": true
+    },
+    {
+      "name": "autoFlip",
+      "type": "boolean",
+      "label": "Auto Flip",
+      "description": "Automatically flip cards after a delay",
+      "default": false
+    },
+    {
+      "name": "autoFlipDelay",
+      "type": "number",
+      "label": "Auto Flip Delay (seconds)",
+      "description": "Delay before auto-flipping cards",
+      "default": 3,
+      "min": 1,
+      "max": 10
+    }
+  ]
+}

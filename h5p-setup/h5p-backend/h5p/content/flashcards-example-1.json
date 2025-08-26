@@ -1,0 +1,74 @@
+{
+  "id": "flashcards-example-1",
+  "title": "Vocabulary Flashcards",
+  "parameters": {
+    "title": "Basic English Vocabulary",
+    "description": "Learn essential English words and their meanings",
+    "cards": [
+      {
+        "front": "What is the capital of France?",
+        "back": "Paris"
+      },
+      {
+        "front": "What is the largest planet in our solar system?",
+        "back": "Jupiter"
+      },
+      {
+        "front": "What is the chemical symbol for gold?",
+        "back": "Au"
+      },
+      {
+        "front": "Who wrote 'Romeo and Juliet'?",
+        "back": "William Shakespeare"
+      },
+      {
+        "front": "What is the square root of 144?",
+        "back": "12"
+      },
+      {
+        "front": "What is the main component of the sun?",
+        "back": "Hydrogen"
+      },
+      {
+        "front": "What year did World War II end?",
+        "back": "1945"
+      },
+      {
+        "front": "What is the largest ocean on Earth?",
+        "back": "Pacific Ocean"
+      }
+    ],
+    "showProgress": true,
+    "autoFlip": false,
+    "autoFlipDelay": 3
+  },
+  "mainLibrary": "H5P.Flashcards 1.0",
+  "metadata": {
+    "title": "Vocabulary Flashcards",
+    "language": "en",
+    "mainLibrary": "H5P.Flashcards 1.0",
+    "preloadedDependencies": [
+      {
+        "machineName": "H5P.Flashcards",
+        "majorVersion": 1,
+        "minorVersion": 0
+      }
+    ],
+    "embedTypes": ["div"],
+    "license": "U",
+    "defaultLanguage": "en",
+    "authors": [
+      {
+        "name": "Default Author",
+        "role": "Author"
+      }
+    ],
+    "licenseVersion": "4.0",
+    "yearFrom": "2025",
+    "yearTo": "2025",
+    "changes": [],
+    "contentType": "Interactive Content"
+  },
+  "createdAt": "2025-08-26T18:30:00.000Z",
+  "updatedAt": "2025-08-26T18:30:00.000Z"
+}

@@ -11,6 +11,43 @@ interface H5PContent {
   metadata?: Record<string, unknown>;
 }
 
+// H5P Answer interface for multiple choice questions
+interface H5PAnswer {
+  text: string;
+  correct: boolean;
+  tipAndFeedback?: {
+    tip: string;
+    chosenFeedback: string;
+    notChosenFeedback: string;
+  };
+}
+
+// H5P Flashcard interface
+interface H5PFlashcard {
+  front: string;
+  back: string;
+}
+
+// H5P Player Data interface
+interface H5PPlayerData {
+  data?: {
+    title?: string;
+    mainLibrary?: string;
+    createdAt?: string;
+    parameters?: {
+      title?: string;
+      description?: string;
+      text?: string;
+      question?: string;
+      answers?: H5PAnswer[];
+      cards?: H5PFlashcard[];
+      showProgress?: boolean;
+      autoFlip?: boolean;
+      autoFlipDelay?: number;
+    };
+  };
+}
+
 function App() {
   const [contents, setContents] = useState<H5PContent[]>([]);
   const [selectedContent, setSelectedContent] = useState<string>("");
@@ -22,6 +59,8 @@ function App() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
+  const [isFlashcardFlipped, setIsFlashcardFlipped] = useState(false);
 
   const API_BASE_URL = "http://localhost:3000";
 
@@ -51,27 +90,72 @@ function App() {
   };
 
   // Create a new H5P content
-  const createContent = async () => {
+  const createContent = async (contentType: string = "text") => {
     try {
       setLoading(true);
       setError("");
 
       const newContentId = `content_${Date.now()}`;
-      const contentData = {
-        title: "New H5P Content",
-        mainLibrary: "H5P.Text 1.1",
-        parameters: {
-          introPage: {
-            showIntroPage: true,
-            title: "Welcome to H5P",
-            showStartButton: true,
-            startButtonText: "Start",
-          },
-          progressType: "dots",
-          passPercentage: 80,
-          questions: [],
-        },
-      };
+      let contentData;
+
+      switch (contentType) {
+        case "flashcards":
+          contentData = {
+            title: "New Flashcard Set",
+            mainLibrary: "H5P.Flashcards 1.0",
+            parameters: {
+              title: "Sample Flashcards",
+              description: "Interactive flashcards for learning",
+              cards: [
+                {
+                  front: "What is the capital of France?",
+                  back: "Paris",
+                },
+                {
+                  front: "What is 2 + 2?",
+                  back: "4",
+                },
+              ],
+              showProgress: true,
+              autoFlip: false,
+              autoFlipDelay: 3,
+            },
+          };
+          break;
+        case "multiple-choice":
+          contentData = {
+            title: "New Multiple Choice",
+            mainLibrary: "H5P.MultipleChoice 1.16",
+            parameters: {
+              question: "Sample question?",
+              answers: [
+                { text: "Option 1", correct: true },
+                { text: "Option 2", correct: false },
+                { text: "Option 3", correct: false },
+              ],
+            },
+          };
+          break;
+        case "blanks":
+          contentData = {
+            title: "New Fill in the Blanks",
+            mainLibrary: "H5P.Blanks 1.14",
+            parameters: {
+              title: "Sample Fill in the Blanks",
+              description: "Complete the sentences",
+              text: "The *sun/sun* rises in the *east/east*.",
+            },
+          };
+          break;
+        default:
+          contentData = {
+            title: "New H5P Content",
+            mainLibrary: "H5P.Text 1.1",
+            parameters: {
+              text: "<p>Enter your content here...</p>",
+            },
+          };
+      }
 
       await axios.post(
         `${API_BASE_URL}/h5p/editor/${newContentId}`,
@@ -130,21 +214,56 @@ function App() {
 
   // Render Fill in the Blanks text with input fields
   const renderFillInBlanksText = (text: string) => {
-    // Simple regex to find blanks marked with *** or ___ or similar patterns
-    const blankPattern = /\*\*\*|___|\[\[.*?\]\]/g;
-    const parts = text.split(blankPattern);
+    // H5P Fill in the Blanks format: *correct/alternative*
+    const blankPattern = /\*([^/]+)\/[^*]+\*/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    let blankIndex = 0;
+
+    // Reset the regex
+    const regex = new RegExp(blankPattern);
+
+    while ((match = regex.exec(text)) !== null) {
+      // Add text before the blank
+      if (match.index > lastIndex) {
+        parts.push({
+          type: "text",
+          content: text.slice(lastIndex, match.index),
+        });
+      }
+
+      // Add the blank
+      parts.push({
+        type: "blank",
+        correctAnswer: match[1].trim(),
+        index: blankIndex++,
+      });
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({
+        type: "text",
+        content: text.slice(lastIndex),
+      });
+    }
 
     return (
       <div className="text-gray-800 leading-relaxed">
         {parts.map((part, index) => (
           <span key={index}>
-            {part}
-            {index < parts.length - 1 && (
+            {part.type === "text" ? (
+              part.content
+            ) : (
               <input
                 type="text"
                 className="mx-1 px-2 py-1 border border-gray-300 rounded text-sm min-w-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Answer"
-                data-blank-index={index}
+                data-blank-index={part.index}
+                data-correct-answer={part.correctAnswer}
               />
             )}
           </span>
@@ -163,18 +282,12 @@ function App() {
     let correctAnswers = 0;
     const totalBlanks = inputs.length;
 
-    // For demo purposes, we'll use some sample correct answers
-    // In a real implementation, these would come from the H5P content data
-    const sampleCorrectAnswers = [
-      "interactive",
-      "content",
-      "learning",
-      "experience",
-    ];
-
-    inputs.forEach((input, index) => {
+    inputs.forEach((input) => {
       const userAnswer = (input as HTMLInputElement).value.trim().toLowerCase();
-      const correctAnswer = sampleCorrectAnswers[index] || "demo";
+      const correctAnswer =
+        (input as HTMLInputElement)
+          .getAttribute("data-correct-answer")
+          ?.toLowerCase() || "";
 
       if (userAnswer === correctAnswer) {
         correctAnswers++;
@@ -197,6 +310,212 @@ function App() {
         </p>
         <p class="text-sm text-gray-600 mt-1">
           ${percentage >= 80 ? "Great job!" : "Keep trying!"}
+        </p>
+      </div>
+    `;
+
+    resultDiv.classList.remove("hidden");
+  };
+
+  // Render Multiple Choice answers
+  const renderMultipleChoiceAnswers = (answers: H5PAnswer[]) => {
+    return (
+      <div className="space-y-3">
+        {answers.map((answer, index) => (
+          <div
+            key={index}
+            className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <input
+              type="checkbox"
+              id={`mc-answer-${index}`}
+              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              data-answer-index={index}
+            />
+            <label
+              htmlFor={`mc-answer-${index}`}
+              className="flex-1 text-gray-900 cursor-pointer"
+            >
+              {answer.text}
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Render Flashcards
+  const renderFlashcards = (
+    cards: H5PFlashcard[],
+    showProgress: boolean = true
+  ) => {
+    const handleFlip = () => {
+      setIsFlashcardFlipped(!isFlashcardFlipped);
+    };
+
+    const handleNext = () => {
+      if (currentFlashcardIndex < cards.length - 1) {
+        setCurrentFlashcardIndex(currentFlashcardIndex + 1);
+        setIsFlashcardFlipped(false);
+      }
+    };
+
+    const handlePrevious = () => {
+      if (currentFlashcardIndex > 0) {
+        setCurrentFlashcardIndex(currentFlashcardIndex - 1);
+        setIsFlashcardFlipped(false);
+      }
+    };
+
+    const currentCard = cards[currentFlashcardIndex];
+
+    return (
+      <div className="max-w-2xl mx-auto">
+        {/* Progress indicator */}
+        {showProgress && cards.length > 1 && (
+          <div className="text-center mb-4">
+            <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+              {currentFlashcardIndex + 1} / {cards.length}
+            </span>
+          </div>
+        )}
+
+        {/* Flashcard */}
+        <div
+          className="relative w-full h-64 mb-6 cursor-pointer"
+          onClick={handleFlip}
+          style={{ perspective: "1000px" }}
+        >
+          <div
+            className="relative w-full h-full transition-transform duration-600"
+            style={{
+              transformStyle: "preserve-3d",
+              transform: isFlashcardFlipped
+                ? "rotateY(180deg)"
+                : "rotateY(0deg)",
+            }}
+          >
+            {/* Front of card */}
+            <div
+              className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-lg shadow-lg flex items-center justify-center p-6 text-center"
+              style={{ backfaceVisibility: "hidden" }}
+            >
+              <div className="text-xl font-medium leading-relaxed">
+                {currentCard.front}
+              </div>
+            </div>
+
+            {/* Back of card */}
+            <div
+              className="absolute inset-0 bg-gradient-to-br from-pink-500 to-red-500 text-white rounded-lg shadow-lg flex items-center justify-center p-6 text-center"
+              style={{
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+              }}
+            >
+              <div className="text-xl font-medium leading-relaxed">
+                {currentCard.back}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation buttons */}
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={handlePrevious}
+            disabled={currentFlashcardIndex === 0}
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            ← Previous
+          </button>
+
+          <button
+            onClick={handleFlip}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            {isFlashcardFlipped ? "Show Front" : "Flip Card"}
+          </button>
+
+          <button
+            onClick={handleNext}
+            disabled={currentFlashcardIndex === cards.length - 1}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Check answers for Multiple Choice
+  const checkMultipleChoiceAnswers = () => {
+    const checkboxes = document.querySelectorAll("input[data-answer-index]");
+    const resultDiv = document.getElementById("multiple-choice-result");
+
+    if (!resultDiv) return;
+
+    let totalCorrect = 0;
+    let userCorrect = 0;
+
+    // Get the answers data from the player data
+    if (
+      !playerData ||
+      !(playerData as H5PPlayerData).data?.parameters?.answers
+    ) {
+      resultDiv.innerHTML =
+        '<p class="text-red-600">Error: Could not load answer data</p>';
+      resultDiv.classList.remove("hidden");
+      return;
+    }
+
+    const answers = (playerData as H5PPlayerData).data!.parameters!.answers!;
+
+    checkboxes.forEach((checkbox, index) => {
+      const isSelected = (checkbox as HTMLInputElement).checked;
+      const answer = answers[index];
+
+      if (answer.correct) {
+        totalCorrect++;
+        if (isSelected) {
+          userCorrect++;
+        }
+      }
+
+      // Visual feedback
+      const answerDiv = checkbox.closest(".flex");
+      if (answerDiv) {
+        if (isSelected) {
+          answerDiv.classList.add("bg-green-50", "border-green-300");
+          if (answer.correct) {
+            answerDiv.classList.add("border-green-500");
+          } else {
+            answerDiv.classList.add("border-red-500");
+          }
+        } else if (answer.correct) {
+          answerDiv.classList.add("bg-yellow-50", "border-yellow-500");
+        }
+      }
+    });
+
+    const percentage =
+      totalCorrect > 0 ? Math.round((userCorrect / totalCorrect) * 100) : 0;
+    const passed = percentage >= 80;
+
+    resultDiv.innerHTML = `
+      <div class="text-center">
+        <p class="text-lg font-semibold ${
+          passed ? "text-green-600" : "text-red-600"
+        }">
+          ${userCorrect} out of ${totalCorrect} correct (${percentage}%)
+        </p>
+        <p class="text-sm text-gray-600 mt-1">
+          ${
+            passed
+              ? "Great job! You passed!"
+              : "Keep trying! You need 80% to pass."
+          }
         </p>
       </div>
     `;
@@ -242,11 +561,38 @@ function App() {
                     {loading ? "Loading..." : "Refresh"}
                   </button>
                   <button
-                    onClick={createContent}
+                    onClick={() => createContent()}
                     disabled={loading}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? "Creating..." : "New Content"}
+                  </button>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">Quick Create:</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => createContent("flashcards")}
+                    disabled={loading}
+                    className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Creating..." : "Flashcards"}
+                  </button>
+                  <button
+                    onClick={() => createContent("multiple-choice")}
+                    disabled={loading}
+                    className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Creating..." : "Multiple Choice"}
+                  </button>
+                  <button
+                    onClick={() => createContent("blanks")}
+                    disabled={loading}
+                    className="px-3 py-1 bg-orange-600 text-white rounded text-sm hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Creating..." : "Fill in Blanks"}
                   </button>
                 </div>
               </div>
@@ -345,31 +691,37 @@ function App() {
                     <div className="mb-4">
                       <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                         <h4 className="text-lg font-medium text-gray-900 mb-2">
-                          {(playerData as any).data?.title ||
+                          {(playerData as H5PPlayerData).data?.title ||
                             "Untitled Content"}
                         </h4>
                         {/* Fill in the Blanks Content */}
-                        {(playerData as any).data?.mainLibrary ===
+                        {(playerData as H5PPlayerData).data?.mainLibrary ===
                           "H5P.Blanks 1.14" && (
                           <div className="h5p-blanks-content">
-                            {(playerData as any).data?.parameters?.title && (
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.title && (
                               <h5 className="text-xl font-semibold text-gray-800 mb-2">
-                                {(playerData as any).data.parameters.title}
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.title
+                                }
                               </h5>
                             )}
-                            {(playerData as any).data?.parameters
+                            {(playerData as H5PPlayerData).data?.parameters
                               ?.description && (
                               <p className="text-gray-600 mb-4">
                                 {
-                                  (playerData as any).data.parameters
-                                    .description
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.description
                                 }
                               </p>
                             )}
-                            {(playerData as any).data?.parameters?.text && (
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.text && (
                               <div className="fill-in-blanks-text">
                                 {renderFillInBlanksText(
-                                  (playerData as any).data.parameters.text
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.text || ""
                                 )}
                               </div>
                             )}
@@ -390,26 +742,105 @@ function App() {
                           </div>
                         )}
 
+                        {/* Multiple Choice Content */}
+                        {(playerData as H5PPlayerData).data?.mainLibrary ===
+                          "H5P.MultipleChoice 1.16" && (
+                          <div className="h5p-multiple-choice-content">
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.question && (
+                              <h5 className="text-xl font-semibold text-gray-800 mb-4">
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.question
+                                }
+                              </h5>
+                            )}
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.answers && (
+                              <div className="multiple-choice-answers">
+                                {renderMultipleChoiceAnswers(
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.answers || []
+                                )}
+                              </div>
+                            )}
+                            <button
+                              onClick={() => checkMultipleChoiceAnswers()}
+                              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                              Check Answers
+                            </button>
+                            <div
+                              id="multiple-choice-result"
+                              className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg hidden"
+                            >
+                              <p className="text-blue-800 font-medium">
+                                Results will appear here
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Flashcard Content */}
+                        {(playerData as H5PPlayerData).data?.mainLibrary ===
+                          "H5P.Flashcards 1.0" && (
+                          <div className="h5p-flashcards-content">
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.title && (
+                              <h5 className="text-xl font-semibold text-gray-800 mb-2">
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.title
+                                }
+                              </h5>
+                            )}
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.description && (
+                              <p className="text-gray-600 mb-4">
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.description
+                                }
+                              </p>
+                            )}
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.cards && (
+                              <div className="flashcards-container">
+                                {renderFlashcards(
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.cards || [],
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.showProgress || true
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {/* Regular Text Content */}
-                        {(playerData as any).data?.mainLibrary ===
+                        {(playerData as H5PPlayerData).data?.mainLibrary ===
                           "H5P.Text 1.1" &&
-                          (playerData as any).data?.parameters?.text && (
+                          (playerData as H5PPlayerData).data?.parameters
+                            ?.text && (
                             <div
                               className="prose max-w-none"
                               dangerouslySetInnerHTML={{
-                                __html: (playerData as any).data.parameters
-                                  .text as string,
+                                __html:
+                                  ((playerData as H5PPlayerData).data
+                                    ?.parameters?.text as string) || "",
                               }}
                             />
                           )}
                         <div className="mt-4 text-sm text-gray-500">
                           <p>
-                            Library: {(playerData as any).data?.mainLibrary}
+                            Library:{" "}
+                            {(playerData as H5PPlayerData).data?.mainLibrary}
                           </p>
                           <p>
                             Created:{" "}
                             {new Date(
-                              (playerData as any).data?.createdAt as string
+                              (playerData as H5PPlayerData).data
+                                ?.createdAt as string
                             ).toLocaleDateString()}
                           </p>
                         </div>

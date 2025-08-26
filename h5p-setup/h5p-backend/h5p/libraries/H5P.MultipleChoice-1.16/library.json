@@ -1,0 +1,35 @@
+{
+  "title": "Multiple Choice",
+  "description": "Create multiple choice questions with one or more correct answers",
+  "majorVersion": 1,
+  "minorVersion": 16,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "H5P Group",
+  "license": "MIT",
+  "machineName": "H5P.MultipleChoice",
+  "preloadedJs": [
+    {
+      "path": "js/multiple-choice.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/multiple-choice.css"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "H5P.JoubelUI",
+      "majorVersion": 1,
+      "minorVersion": 3
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.MultipleChoice",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ]
+}

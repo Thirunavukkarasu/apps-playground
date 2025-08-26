@@ -1,0 +1,80 @@
+{
+  "id": "mc-test-1",
+  "title": "Multiple Choice Test",
+  "parameters": {
+    "question": "Which of the following are programming languages?",
+    "answers": [
+      {
+        "text": "JavaScript",
+        "correct": true,
+        "tipAndFeedback": {
+          "tip": "",
+          "chosenFeedback": "Correct! JavaScript is a programming language.",
+          "notChosenFeedback": ""
+        }
+      },
+      {
+        "text": "HTML",
+        "correct": false,
+        "tipAndFeedback": {
+          "tip": "",
+          "chosenFeedback": "Incorrect! HTML is a markup language, not a programming language.",
+          "notChosenFeedback": ""
+        }
+      },
+      {
+        "text": "Python",
+        "correct": true,
+        "tipAndFeedback": {
+          "tip": "",
+          "chosenFeedback": "Correct! Python is a programming language.",
+          "notChosenFeedback": ""
+        }
+      },
+      {
+        "text": "CSS",
+        "correct": false,
+        "tipAndFeedback": {
+          "tip": "",
+          "chosenFeedback": "Incorrect! CSS is a styling language, not a programming language.",
+          "notChosenFeedback": ""
+        }
+      }
+    ],
+    "enableRetry": true,
+    "enableSolutionsButton": true,
+    "passPercentage": 80,
+    "showResults": true
+  },
+  "mainLibrary": "H5P.MultipleChoice 1.16",
+  "metadata": {
+    "title": "Multiple Choice Test",
+    "language": "en",
+    "mainLibrary": "H5P.MultipleChoice 1.16",
+    "preloadedDependencies": [
+      {
+        "machineName": "H5P.Text",
+        "majorVersion": 1,
+        "minorVersion": 1
+      }
+    ],
+    "embedTypes": [
+      "div"
+    ],
+    "license": "U",
+    "defaultLanguage": "en",
+    "authors": [
+      {
+        "name": "Default Author",
+        "role": "Author"
+      }
+    ],
+    "licenseVersion": "4.0",
+    "yearFrom": "2025",
+    "yearTo": "2025",
+    "changes": [],
+    "contentType": "Text"
+  },
+  "createdAt": "2025-08-26T18:05:51.743Z",
+  "updatedAt": "2025-08-26T18:05:51.743Z"
+}
