@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 interface H5PContent {
   id: string;
   title: string;
+  mainLibrary?: string;
+  createdAt?: string;
+  updatedAt?: string;
   parameters?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
 }
@@ -21,6 +24,31 @@ function App() {
   const [error, setError] = useState<string>("");
 
   const API_BASE_URL = "http://localhost:3000";
+
+  // Load existing content on component mount
+  useEffect(() => {
+    loadContentList();
+  }, []);
+
+  // Load content list from backend
+  const loadContentList = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await axios.get(`${API_BASE_URL}/h5p/content`);
+      setContents(response.data);
+
+      if (response.data.length > 0 && !selectedContent) {
+        setSelectedContent(response.data[0].id);
+      }
+    } catch (err) {
+      setError("Failed to load content list");
+      console.error("Error loading content list:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Create a new H5P content
   const createContent = async () => {
@@ -50,11 +78,8 @@ function App() {
         contentData
       );
 
-      // Add to local state
-      setContents((prev) => [
-        ...prev,
-        { id: newContentId, title: contentData.title },
-      ]);
+      // Refresh content list
+      await loadContentList();
       setSelectedContent(newContentId);
 
       // Load editor data
@@ -132,13 +157,22 @@ function App() {
                 <h2 className="text-xl font-semibold text-gray-900">
                   Content List
                 </h2>
-                <button
-                  onClick={createContent}
-                  disabled={loading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {loading ? "Creating..." : "New Content"}
-                </button>
+                <div className="space-x-2">
+                  <button
+                    onClick={loadContentList}
+                    disabled={loading}
+                    className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Loading..." : "Refresh"}
+                  </button>
+                  <button
+                    onClick={createContent}
+                    disabled={loading}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Creating..." : "New Content"}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -155,7 +189,15 @@ function App() {
                     <h3 className="font-medium text-gray-900">
                       {content.title}
                     </h3>
-                    <p className="text-sm text-gray-500">ID: {content.id}</p>
+                    <div className="text-sm text-gray-500 space-y-1">
+                      <p>Library: {content.mainLibrary}</p>
+                      <p>
+                        Created:{" "}
+                        {content.createdAt
+                          ? new Date(content.createdAt).toLocaleDateString()
+                          : "Unknown"}
+                      </p>
+                    </div>
                   </div>
                 ))}
 
@@ -220,13 +262,50 @@ function App() {
                 {playerData && (
                   <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Player Data
+                      Content Viewer
                     </h3>
-                    <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
-                      <pre className="text-sm text-gray-800 whitespace-pre-wrap">
-                        {JSON.stringify(playerData, null, 2)}
-                      </pre>
+
+                    {/* H5P Content Display */}
+                    <div className="mb-4">
+                      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <h4 className="text-lg font-medium text-gray-900 mb-2">
+                          {(playerData as any).data?.title ||
+                            "Untitled Content"}
+                        </h4>
+                        {(playerData as any).data?.parameters?.text && (
+                          <div
+                            className="prose max-w-none"
+                            dangerouslySetInnerHTML={{
+                              __html: (playerData as any).data.parameters
+                                .text as string,
+                            }}
+                          />
+                        )}
+                        <div className="mt-4 text-sm text-gray-500">
+                          <p>
+                            Library: {(playerData as any).data?.mainLibrary}
+                          </p>
+                          <p>
+                            Created:{" "}
+                            {new Date(
+                              (playerData as any).data?.createdAt as string
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Raw Data (Collapsible) */}
+                    <details className="mt-4">
+                      <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+                        View Raw Data
+                      </summary>
+                      <div className="mt-2 bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
+                        <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+                          {JSON.stringify(playerData, null, 2)}
+                        </pre>
+                      </div>
+                    </details>
                   </div>
                 )}
               </div>
