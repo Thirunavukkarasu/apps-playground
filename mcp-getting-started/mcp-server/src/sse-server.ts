@@ -19,6 +19,10 @@ app.get("/sse", async (req, res) => {
 });
 
 app.post("/messages", async (req, res) => {
+    if (!transport) {
+        res.status(500).json({ error: "No active SSE transport" });
+        return;
+    }
     await transport.handlePostMessage(req, res);
 });
 
