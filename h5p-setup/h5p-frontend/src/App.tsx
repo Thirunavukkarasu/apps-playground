@@ -28,6 +28,17 @@ interface H5PFlashcard {
   back: string;
 }
 
+// H5P Drag and Drop interfaces
+interface H5PDraggableItem {
+  text: string;
+  correctDropZone: number;
+}
+
+interface H5PDropZone {
+  label: string;
+  description: string;
+}
+
 // H5P Player Data interface
 interface H5PPlayerData {
   data?: {
@@ -44,6 +55,12 @@ interface H5PPlayerData {
       showProgress?: boolean;
       autoFlip?: boolean;
       autoFlipDelay?: number;
+      instructions?: string;
+      draggableItems?: H5PDraggableItem[];
+      dropZones?: H5PDropZone[];
+      showFeedback?: boolean;
+      allowRetry?: boolean;
+      shuffleItems?: boolean;
     };
   };
 }
@@ -61,6 +78,15 @@ function App() {
   const [error, setError] = useState<string>("");
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
   const [isFlashcardFlipped, setIsFlashcardFlipped] = useState(false);
+  const [dragDropState, setDragDropState] = useState<{
+    droppedItems: Record<number, { itemIndex: number; zoneIndex: number }>;
+    isCompleted: boolean;
+    correctAnswers: number;
+  }>({
+    droppedItems: {},
+    isCompleted: false,
+    correctAnswers: 0,
+  });
 
   const API_BASE_URL = "http://localhost:3000";
 
@@ -144,6 +170,30 @@ function App() {
               title: "Sample Fill in the Blanks",
               description: "Complete the sentences",
               text: "The *sun/sun* rises in the *east/east*.",
+            },
+          };
+          break;
+        case "drag-drop":
+          contentData = {
+            title: "New Drag and Drop",
+            mainLibrary: "H5P.DragAndDrop 1.0",
+            parameters: {
+              title: "Sample Drag and Drop",
+              description: "Drag items to their correct positions",
+              instructions: "Drag each item to its correct category.",
+              draggableItems: [
+                { text: "Apple", correctDropZone: 1 },
+                { text: "Car", correctDropZone: 2 },
+                { text: "Book", correctDropZone: 3 },
+              ],
+              dropZones: [
+                { label: "Fruit", description: "Food that grows on trees" },
+                { label: "Vehicle", description: "Machine for transportation" },
+                { label: "Object", description: "Item for reading" },
+              ],
+              showFeedback: true,
+              allowRetry: true,
+              shuffleItems: false,
             },
           };
           break;
@@ -449,6 +499,238 @@ function App() {
     );
   };
 
+  // Render Drag and Drop
+  const renderDragAndDrop = (
+    draggableItems: H5PDraggableItem[],
+    dropZones: H5PDropZone[],
+    showFeedback: boolean = true,
+    allowRetry: boolean = true
+  ) => {
+    const handleDragStart = (e: React.DragEvent, itemIndex: number) => {
+      e.dataTransfer.setData("text/plain", itemIndex.toString());
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault();
+    };
+
+    const handleDrop = (e: React.DragEvent, zoneIndex: number) => {
+      e.preventDefault();
+      const itemIndex = parseInt(e.dataTransfer.getData("text/plain"));
+
+      setDragDropState((prev) => ({
+        ...prev,
+        droppedItems: {
+          ...prev.droppedItems,
+          [itemIndex]: { itemIndex, zoneIndex },
+        },
+      }));
+    };
+
+    const handleRemoveItem = (itemIndex: number) => {
+      setDragDropState((prev) => {
+        const newDroppedItems = { ...prev.droppedItems };
+        delete newDroppedItems[itemIndex];
+        return {
+          ...prev,
+          droppedItems: newDroppedItems,
+        };
+      });
+    };
+
+    const checkAnswers = () => {
+      let correct = 0;
+
+      Object.entries(dragDropState.droppedItems).forEach(
+        ([itemIndexStr, data]) => {
+          const itemIndex = parseInt(itemIndexStr);
+          const item = draggableItems[itemIndex];
+          if (item.correctDropZone === data.zoneIndex) {
+            correct++;
+          }
+        }
+      );
+
+      setDragDropState((prev) => ({
+        ...prev,
+        isCompleted: true,
+        correctAnswers: correct,
+      }));
+    };
+
+    const resetActivity = () => {
+      setDragDropState({
+        droppedItems: {},
+        isCompleted: false,
+        correctAnswers: 0,
+      });
+    };
+
+    const getFeedbackMessage = () => {
+      const percentage = Math.round(
+        (dragDropState.correctAnswers / draggableItems.length) * 100
+      );
+
+      if (dragDropState.correctAnswers === draggableItems.length) {
+        return {
+          text: `Perfect! All ${draggableItems.length} items are in their correct positions.`,
+          class: "text-green-600 bg-green-50",
+        };
+      } else if (percentage >= 80) {
+        return {
+          text: `Good job! ${dragDropState.correctAnswers} out of ${draggableItems.length} items are correct (${percentage}%).`,
+          class: "text-yellow-600 bg-yellow-50",
+        };
+      } else if (percentage >= 60) {
+        return {
+          text: `Not bad! ${dragDropState.correctAnswers} out of ${draggableItems.length} items are correct (${percentage}%). Keep trying!`,
+          class: "text-orange-600 bg-orange-50",
+        };
+      } else {
+        return {
+          text: `Try again! Only ${dragDropState.correctAnswers} out of ${draggableItems.length} items are correct (${percentage}%).`,
+          class: "text-red-600 bg-red-50",
+        };
+      }
+    };
+
+    const isItemDropped = (itemIndex: number) => {
+      return Object.prototype.hasOwnProperty.call(
+        dragDropState.droppedItems,
+        itemIndex
+      );
+    };
+
+    const isItemCorrect = (itemIndex: number) => {
+      if (!dragDropState.isCompleted) return null;
+      const droppedData = dragDropState.droppedItems[itemIndex];
+      if (!droppedData) return false;
+      return (
+        draggableItems[itemIndex].correctDropZone === droppedData.zoneIndex
+      );
+    };
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Draggable Items Area */}
+          <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[300px]">
+            <h4 className="font-semibold text-gray-700 mb-3">Items to Drag</h4>
+            <div className="space-y-2">
+              {draggableItems.map((item, index) => (
+                <div
+                  key={index}
+                  draggable={!isItemDropped(index)}
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  className={`p-3 rounded-lg cursor-grab transition-all ${
+                    isItemDropped(index)
+                      ? "opacity-50 bg-gray-200 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-md"
+                  } ${
+                    dragDropState.isCompleted && !isItemDropped(index)
+                      ? "bg-red-500 opacity-70"
+                      : ""
+                  } ${
+                    dragDropState.isCompleted && isItemDropped(index)
+                      ? isItemCorrect(index)
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                      : ""
+                  }`}
+                >
+                  {item.text}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Drop Zones Area */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-700 mb-3">Drop Zones</h4>
+            {dropZones.map((zone, index) => (
+              <div
+                key={index}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index + 1)}
+                className={`border-2 border-gray-300 rounded-lg p-4 min-h-[80px] transition-all ${
+                  dragDropState.isCompleted
+                    ? "border-gray-400"
+                    : "hover:border-blue-400"
+                }`}
+              >
+                <div className="font-semibold text-gray-800 mb-1">
+                  {zone.label}
+                </div>
+                <div className="text-sm text-gray-600 mb-2">
+                  {zone.description}
+                </div>
+                <div className="flex flex-wrap gap-2 min-h-[40px]">
+                  {Object.entries(dragDropState.droppedItems)
+                    .filter(([, data]) => data.zoneIndex === index + 1)
+                    .map(([itemIndexStr]) => {
+                      const itemIndex = parseInt(itemIndexStr);
+                      const item = draggableItems[itemIndex];
+                      return (
+                        <div
+                          key={itemIndex}
+                          className={`px-3 py-1 rounded text-sm font-medium cursor-pointer transition-all ${
+                            dragDropState.isCompleted
+                              ? isItemCorrect(itemIndex)
+                                ? "bg-green-500 text-white"
+                                : "bg-red-500 text-white"
+                              : "bg-green-600 text-white hover:bg-green-700"
+                          }`}
+                          onClick={() =>
+                            !dragDropState.isCompleted &&
+                            handleRemoveItem(itemIndex)
+                          }
+                        >
+                          {item.text}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-4 mt-6">
+          <button
+            onClick={checkAnswers}
+            disabled={
+              dragDropState.isCompleted ||
+              Object.keys(dragDropState.droppedItems).length === 0
+            }
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Check Answers
+          </button>
+          {allowRetry && dragDropState.isCompleted && (
+            <button
+              onClick={resetActivity}
+              className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+
+        {/* Feedback */}
+        {dragDropState.isCompleted && showFeedback && (
+          <div
+            className={`mt-4 p-4 rounded-lg text-center ${
+              getFeedbackMessage().class
+            }`}
+          >
+            <p className="font-medium">{getFeedbackMessage().text}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Check answers for Multiple Choice
   const checkMultipleChoiceAnswers = () => {
     const checkboxes = document.querySelectorAll("input[data-answer-index]");
@@ -593,6 +875,13 @@ function App() {
                     className="px-3 py-1 bg-orange-600 text-white rounded text-sm hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? "Creating..." : "Fill in Blanks"}
+                  </button>
+                  <button
+                    onClick={() => createContent("drag-drop")}
+                    disabled={loading}
+                    className="px-3 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {loading ? "Creating..." : "Drag & Drop"}
                   </button>
                 </div>
               </div>
@@ -814,6 +1103,57 @@ function App() {
                                 )}
                               </div>
                             )}
+                          </div>
+                        )}
+
+                        {/* Drag and Drop Content */}
+                        {(playerData as H5PPlayerData).data?.mainLibrary ===
+                          "H5P.DragAndDrop 1.0" && (
+                          <div className="h5p-drag-drop-content">
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.title && (
+                              <h5 className="text-xl font-semibold text-gray-800 mb-2">
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.title
+                                }
+                              </h5>
+                            )}
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.description && (
+                              <p className="text-gray-600 mb-2">
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.description
+                                }
+                              </p>
+                            )}
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.instructions && (
+                              <p className="text-gray-700 mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+                                {
+                                  (playerData as H5PPlayerData).data?.parameters
+                                    ?.instructions
+                                }
+                              </p>
+                            )}
+                            {(playerData as H5PPlayerData).data?.parameters
+                              ?.draggableItems &&
+                              (playerData as H5PPlayerData).data?.parameters
+                                ?.dropZones && (
+                                <div className="drag-drop-container">
+                                  {renderDragAndDrop(
+                                    (playerData as H5PPlayerData).data
+                                      ?.parameters?.draggableItems || [],
+                                    (playerData as H5PPlayerData).data
+                                      ?.parameters?.dropZones || [],
+                                    (playerData as H5PPlayerData).data
+                                      ?.parameters?.showFeedback || true,
+                                    (playerData as H5PPlayerData).data
+                                      ?.parameters?.allowRetry || true
+                                  )}
+                                </div>
+                              )}
                           </div>
                         )}
 

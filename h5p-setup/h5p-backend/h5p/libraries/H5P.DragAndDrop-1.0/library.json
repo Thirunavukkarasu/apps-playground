@@ -1,0 +1,122 @@
+{
+  "title": "Drag and Drop",
+  "description": "Create interactive drag and drop questions with draggable elements and drop zones.",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "H5P",
+  "license": "MIT",
+  "machineName": "H5P.DragAndDrop",
+  "preloadedJs": [
+    {
+      "path": "js/drag-and-drop.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/drag-and-drop.css"
+    }
+  ],
+  "semantics": [
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "description": "Title for the drag and drop activity",
+      "default": "Drag and Drop"
+    },
+    {
+      "name": "description",
+      "type": "text",
+      "label": "Description",
+      "description": "Description of the drag and drop activity",
+      "default": "Drag the items to their correct positions"
+    },
+    {
+      "name": "instructions",
+      "type": "text",
+      "label": "Instructions",
+      "description": "Instructions for the user",
+      "default": "Drag the items from the left to their correct positions on the right."
+    },
+    {
+      "name": "draggableItems",
+      "type": "list",
+      "label": "Draggable Items",
+      "description": "Add items that can be dragged",
+      "entity": "draggableItem",
+      "field": {
+        "name": "draggableItem",
+        "type": "group",
+        "label": "Draggable Item",
+        "fields": [
+          {
+            "name": "text",
+            "type": "text",
+            "label": "Item Text",
+            "description": "Text to display on the draggable item",
+            "default": "Item"
+          },
+          {
+            "name": "correctDropZone",
+            "type": "number",
+            "label": "Correct Drop Zone",
+            "description": "The drop zone number where this item should be placed (1, 2, 3, etc.)",
+            "default": 1,
+            "min": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "dropZones",
+      "type": "list",
+      "label": "Drop Zones",
+      "description": "Add drop zones where items can be placed",
+      "entity": "dropZone",
+      "field": {
+        "name": "dropZone",
+        "type": "group",
+        "label": "Drop Zone",
+        "fields": [
+          {
+            "name": "label",
+            "type": "text",
+            "label": "Zone Label",
+            "description": "Label for the drop zone",
+            "default": "Drop Zone"
+          },
+          {
+            "name": "description",
+            "type": "text",
+            "label": "Zone Description",
+            "description": "Description or hint for this drop zone",
+            "default": "Drop an item here"
+          }
+        ]
+      }
+    },
+    {
+      "name": "showFeedback",
+      "type": "boolean",
+      "label": "Show Feedback",
+      "description": "Show feedback when items are dropped",
+      "default": true
+    },
+    {
+      "name": "allowRetry",
+      "type": "boolean",
+      "label": "Allow Retry",
+      "description": "Allow users to retry after completing",
+      "default": true
+    },
+    {
+      "name": "shuffleItems",
+      "type": "boolean",
+      "label": "Shuffle Items",
+      "description": "Randomly shuffle the draggable items",
+      "default": false
+    }
+  ]
+}

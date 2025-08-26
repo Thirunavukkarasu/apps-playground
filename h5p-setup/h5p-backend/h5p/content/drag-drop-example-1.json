@@ -1,0 +1,85 @@
+{
+  "id": "drag-drop-example-1",
+  "title": "Vocabulary Matching",
+  "parameters": {
+    "title": "Match the Words",
+    "description": "Drag the words to match them with their correct meanings",
+    "instructions": "Drag each word from the left to its correct meaning on the right.",
+    "draggableItems": [
+      {
+        "text": "Apple",
+        "correctDropZone": 1
+      },
+      {
+        "text": "Car",
+        "correctDropZone": 2
+      },
+      {
+        "text": "Book",
+        "correctDropZone": 3
+      },
+      {
+        "text": "House",
+        "correctDropZone": 4
+      },
+      {
+        "text": "Tree",
+        "correctDropZone": 5
+      }
+    ],
+    "dropZones": [
+      {
+        "label": "Fruit",
+        "description": "A red or green fruit that grows on trees"
+      },
+      {
+        "label": "Vehicle",
+        "description": "A machine used for transportation on roads"
+      },
+      {
+        "label": "Reading Material",
+        "description": "A collection of pages with text and images"
+      },
+      {
+        "label": "Building",
+        "description": "A place where people live"
+      },
+      {
+        "label": "Plant",
+        "description": "A tall plant with a trunk and branches"
+      }
+    ],
+    "showFeedback": true,
+    "allowRetry": true,
+    "shuffleItems": false
+  },
+  "mainLibrary": "H5P.DragAndDrop 1.0",
+  "metadata": {
+    "title": "Vocabulary Matching",
+    "language": "en",
+    "mainLibrary": "H5P.DragAndDrop 1.0",
+    "preloadedDependencies": [
+      {
+        "machineName": "H5P.DragAndDrop",
+        "majorVersion": 1,
+        "minorVersion": 0
+      }
+    ],
+    "embedTypes": ["div"],
+    "license": "U",
+    "defaultLanguage": "en",
+    "authors": [
+      {
+        "name": "Default Author",
+        "role": "Author"
+      }
+    ],
+    "licenseVersion": "4.0",
+    "yearFrom": "2025",
+    "yearTo": "2025",
+    "changes": [],
+    "contentType": "Interactive Content"
+  },
+  "createdAt": "2025-08-26T19:00:00.000Z",
+  "updatedAt": "2025-08-26T19:00:00.000Z"
+}

@@ -1,0 +1,305 @@
+.h5p-drag-drop-container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.h5p-drag-drop-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.h5p-drag-drop-description {
+  color: #718096;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.h5p-drag-drop-instructions {
+  color: #4a5568;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #f7fafc;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 4px solid #4299e1;
+}
+
+.h5p-drag-drop-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Draggable Items Area */
+.h5p-draggable-area {
+  background: #f7fafc;
+  border: 2px dashed #cbd5e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 300px;
+}
+
+.h5p-draggable-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.h5p-draggable-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: grab;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  user-select: none;
+}
+
+.h5p-draggable-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.h5p-draggable-item:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.h5p-draggable-item.h5p-dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+.h5p-draggable-item.h5p-not-dropped {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  opacity: 0.7;
+}
+
+/* Drop Zones Area */
+.h5p-drop-zones-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.h5p-drop-zone {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 80px;
+  transition: all 0.2s ease;
+}
+
+.h5p-drop-zone:hover {
+  border-color: #cbd5e0;
+}
+
+.h5p-drop-zone.h5p-drag-over {
+  border-color: #4299e1;
+  background: #ebf8ff;
+  transform: scale(1.02);
+}
+
+.h5p-drop-zone-label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.h5p-drop-zone-description {
+  color: #718096;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.h5p-drop-zone-content {
+  min-height: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.h5p-dropped-item {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.h5p-dropped-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.h5p-dropped-item.h5p-correct {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  border: 2px solid #38a169;
+}
+
+.h5p-dropped-item.h5p-incorrect {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  border: 2px solid #e53e3e;
+}
+
+/* Action Buttons */
+.h5p-drag-drop-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.h5p-drag-drop-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.h5p-drag-drop-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.h5p-drag-drop-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.h5p-check-btn {
+  background: #4299e1;
+  color: white;
+}
+
+.h5p-check-btn:hover:not(:disabled) {
+  background: #3182ce;
+}
+
+.h5p-check-btn:disabled {
+  background: #cbd5e0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.h5p-reset-btn {
+  background: #e2e8f0;
+  color: #4a5568;
+  display: none;
+}
+
+.h5p-reset-btn:hover:not(:disabled) {
+  background: #cbd5e0;
+}
+
+/* Feedback Area */
+.h5p-drag-drop-feedback {
+  display: none;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+.h5p-feedback-perfect {
+  background: #f0fff4;
+  color: #22543d;
+  border: 2px solid #48bb78;
+}
+
+.h5p-feedback-good {
+  background: #fffbeb;
+  color: #92400e;
+  border: 2px solid #f6ad55;
+}
+
+.h5p-feedback-okay {
+  background: #fef5e7;
+  color: #c05621;
+  border: 2px solid #ed8936;
+}
+
+.h5p-feedback-poor {
+  background: #fed7d7;
+  color: #742a2a;
+  border: 2px solid #f56565;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .h5p-drag-drop-content {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .h5p-draggable-area {
+    min-height: 200px;
+  }
+
+  .h5p-drag-drop-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .h5p-drag-drop-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Animation for dropped items */
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.h5p-dropped-item {
+  animation: dropIn 0.3s ease-out;
+}
+
+/* Animation for feedback */
+@keyframes feedbackIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.h5p-drag-drop-feedback {
+  animation: feedbackIn 0.4s ease-out;
+}
