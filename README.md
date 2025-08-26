@@ -1,1 +1,1 @@
-# JS Kitchen Sink
+# Apps Playground
