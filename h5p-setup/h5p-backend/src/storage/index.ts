@@ -2,24 +2,7 @@ import { MemoryStorage } from './memoryStorage';
 import { FileSystemStorage } from './fileSystemStorage';
 // import { DatabaseStorage } from './databaseStorage';
 import { CloudStorage } from './cloudStorage';
-
-export interface ContentData {
-    id: string;
-    title: string;
-    parameters: any;
-    mainLibrary: string;
-    metadata: any;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface IContentStorage {
-    saveContent(contentId: string, contentData: ContentData): Promise<void>;
-    getContent(contentId: string): Promise<ContentData | null>;
-    listContent(): Promise<ContentData[]>;
-    deleteContent(contentId: string): Promise<void>;
-    contentExists(contentId: string): Promise<boolean>;
-}
+import type { IContentStorage } from '@/types';
 
 export class StorageFactory {
     static createStorage(): IContentStorage {

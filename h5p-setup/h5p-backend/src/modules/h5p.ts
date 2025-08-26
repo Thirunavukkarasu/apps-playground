@@ -1,6 +1,4 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { serve } from "bun";
 import {
     H5PEditor,
     H5PPlayer,
@@ -10,10 +8,10 @@ import {
 import type {
     IUser,
     IContentMetadata,
-    ContentParameters,
 } from "@lumieducation/h5p-server";
 import path from "path";
-import { StorageFactory, type ContentData } from "./storage";
+import { StorageFactory } from "@/storage";
+import type { ContentData } from "@/types";
 
 // Directories for local storage
 const contentDir = path.resolve("./h5p/content");
@@ -55,19 +53,11 @@ const player = new H5PPlayer(
     config
 );
 
-// Hono app
-const app = new Hono();
-
-// Add CORS middleware
-app.use('*', cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-}));
+// H5P routes
+const h5pApp = new Hono();
 
 // Serve editor JSON
-app.get("/h5p/editor/:contentId", async (c) => {
+h5pApp.get("/editor/:contentId", async (c) => {
     const { contentId } = c.req.param();
 
     try {
@@ -92,7 +82,7 @@ app.get("/h5p/editor/:contentId", async (c) => {
 });
 
 // Save content
-app.post("/h5p/editor/:contentId", async (c) => {
+h5pApp.post("/editor/:contentId", async (c) => {
     const { contentId } = c.req.param();
     const body = await c.req.json();
 
@@ -158,7 +148,7 @@ app.post("/h5p/editor/:contentId", async (c) => {
 });
 
 // Play content
-app.get("/h5p/player/:contentId", async (c) => {
+h5pApp.get("/player/:contentId", async (c) => {
     const { contentId } = c.req.param();
 
     try {
@@ -195,7 +185,7 @@ app.get("/h5p/player/:contentId", async (c) => {
 });
 
 // List available libraries
-app.get("/h5p/libraries", async (c) => {
+h5pApp.get("/libraries", async (c) => {
     try {
         const libraries = await libraryStorage.getInstalledLibraryNames();
         return c.json(libraries);
@@ -206,7 +196,7 @@ app.get("/h5p/libraries", async (c) => {
 });
 
 // List all stored content
-app.get("/h5p/content", async (c) => {
+h5pApp.get("/content", async (c) => {
     try {
         const contentList = await customContentStorage.listContent();
         const simplifiedList = contentList.map(content => ({
@@ -225,7 +215,7 @@ app.get("/h5p/content", async (c) => {
 });
 
 // Health check endpoint
-app.get("/h5p/health", async (c) => {
+h5pApp.get("/health", async (c) => {
     try {
         const contentList = await customContentStorage.listContent();
         return c.json({
@@ -245,17 +235,4 @@ app.get("/h5p/health", async (c) => {
     }
 });
 
-// Start Bun server
-serve({
-    fetch: app.fetch,
-    port: 3000,
-});
-
-console.log('🚀 H5P Server started successfully!');
-console.log('📍 Server running at: http://localhost:3000');
-console.log('💾 Storage type:', process.env.STORAGE_TYPE || 'memory');
-console.log('📚 H5P Libraries available at: http://localhost:3000/h5p/libraries');
-console.log('🏥 Health check at: http://localhost:3000/h5p/health');
-console.log('📝 Content management at: http://localhost:3000/h5p/content');
-console.log('✏️  Editor at: http://localhost:3000/h5p/editor/:contentId');
-console.log('🎮 Player at: http://localhost:3000/h5p/player/:contentId');
+export { h5pApp };

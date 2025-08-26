@@ -16,16 +16,16 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p h5p/content h5p/libraries h5p/temp
 
-# Build the application
-RUN bun run build:prod
+# Build the application (if needed)
+# RUN bun run build:prod
 
 # Production stage
 FROM oven/bun:1-slim
 
 WORKDIR /app
 
-# Copy built application and dependencies
-COPY --from=base /app/dist ./dist
+# Copy source code and dependencies
+COPY --from=base /app/src ./src
 COPY --from=base /app/package.json ./
 COPY --from=base /app/bun.lockb ./
 COPY --from=base /app/h5p ./h5p
@@ -49,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3000/h5p/health || exit 1
 
 # Start the application
-CMD ["bun", "run", "dist/server.js"]
+CMD ["bun", "run", "src/server.ts"]
