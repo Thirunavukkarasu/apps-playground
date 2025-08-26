@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # Development with memory storage
+  h5p-dev:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - STORAGE_TYPE=memory
+    volumes:
+      - ./h5p:/app/h5p
+    profiles:
+      - dev
+
+  # Development with file system storage
+  h5p-dev-fs:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - STORAGE_TYPE=filesystem
+      - CONTENT_DIR=./h5p/content
+    volumes:
+      - ./h5p:/app/h5p
+    profiles:
+      - dev-fs
+
+  # Production with file system storage
+  h5p-prod:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - STORAGE_TYPE=filesystem
+      - CONTENT_DIR=./h5p/content
+    volumes:
+      - h5p-content:/app/h5p/content
+      - h5p-libraries:/app/h5p/libraries
+    restart: unless-stopped
+    profiles:
+      - prod
+
+  # Production with database storage
+  h5p-prod-db:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - STORAGE_TYPE=database
+      - DATABASE_URL=postgresql://h5p_user:h5p_password@postgres:5432/h5p_db
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    profiles:
+      - prod-db
+
+  # PostgreSQL database for production
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=h5p_db
+      - POSTGRES_USER=h5p_user
+      - POSTGRES_PASSWORD=h5p_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    profiles:
+      - prod-db
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    profiles:
+      - prod-db
+
+volumes:
+  h5p-content:
+  h5p-libraries:
+  postgres-data:
+  redis-data:

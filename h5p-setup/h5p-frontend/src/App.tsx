@@ -1,0 +1,266 @@
+import { useState } from "react";
+import axios from "axios";
+
+interface H5PContent {
+  id: string;
+  title: string;
+  parameters?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+function App() {
+  const [contents, setContents] = useState<H5PContent[]>([]);
+  const [selectedContent, setSelectedContent] = useState<string>("");
+  const [editorData, setEditorData] = useState<Record<string, unknown> | null>(
+    null
+  );
+  const [playerData, setPlayerData] = useState<Record<string, unknown> | null>(
+    null
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  const API_BASE_URL = "http://localhost:3000";
+
+  // Create a new H5P content
+  const createContent = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const newContentId = `content_${Date.now()}`;
+      const contentData = {
+        title: "New H5P Content",
+        mainLibrary: "H5P.Text 1.1",
+        parameters: {
+          introPage: {
+            showIntroPage: true,
+            title: "Welcome to H5P",
+            showStartButton: true,
+            startButtonText: "Start",
+          },
+          progressType: "dots",
+          passPercentage: 80,
+          questions: [],
+        },
+      };
+
+      await axios.post(
+        `${API_BASE_URL}/h5p/editor/${newContentId}`,
+        contentData
+      );
+
+      // Add to local state
+      setContents((prev) => [
+        ...prev,
+        { id: newContentId, title: contentData.title },
+      ]);
+      setSelectedContent(newContentId);
+
+      // Load editor data
+      await loadEditorData(newContentId);
+    } catch (err) {
+      setError("Failed to create content");
+      console.error("Error creating content:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load editor data for a content
+  const loadEditorData = async (contentId: string) => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await axios.get(
+        `${API_BASE_URL}/h5p/editor/${contentId}`
+      );
+      setEditorData(response.data);
+    } catch (err) {
+      setError("Failed to load editor data");
+      console.error("Error loading editor data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load player data for a content
+  const loadPlayerData = async (contentId: string) => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await axios.get(
+        `${API_BASE_URL}/h5p/player/${contentId}`
+      );
+      setPlayerData(response.data);
+    } catch (err) {
+      setError("Failed to load player data");
+      console.error("Error loading player data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            H5P Content Manager
+          </h1>
+          <p className="text-gray-600">
+            Create and manage interactive H5P content
+          </p>
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Sidebar - Content List */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Content List
+                </h2>
+                <button
+                  onClick={createContent}
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loading ? "Creating..." : "New Content"}
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {contents.map((content) => (
+                  <div
+                    key={content.id}
+                    className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                      selectedContent === content.id
+                        ? "bg-blue-50 border border-blue-200"
+                        : "bg-gray-50 hover:bg-gray-100"
+                    }`}
+                    onClick={() => setSelectedContent(content.id)}
+                  >
+                    <h3 className="font-medium text-gray-900">
+                      {content.title}
+                    </h3>
+                    <p className="text-sm text-gray-500">ID: {content.id}</p>
+                  </div>
+                ))}
+
+                {contents.length === 0 && (
+                  <p className="text-gray-500 text-center py-8">
+                    No content created yet. Click "New Content" to get started.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Main Area - Editor/Player */}
+          <div className="lg:col-span-2">
+            {selectedContent ? (
+              <div className="space-y-6">
+                {/* Content Actions */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Content:{" "}
+                      {contents.find((c) => c.id === selectedContent)?.title}
+                    </h2>
+                    <div className="space-x-2">
+                      <button
+                        onClick={() => loadEditorData(selectedContent)}
+                        disabled={loading}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {loading ? "Loading..." : "Load Editor"}
+                      </button>
+                      <button
+                        onClick={() => loadPlayerData(selectedContent)}
+                        disabled={loading}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {loading ? "Loading..." : "Load Player"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-gray-600">
+                    Content ID: {selectedContent}
+                  </p>
+                </div>
+
+                {/* Editor Data Display */}
+                {editorData && (
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Editor Data
+                    </h3>
+                    <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
+                      <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+                        {JSON.stringify(editorData, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* Player Data Display */}
+                {playerData && (
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Player Data
+                    </h3>
+                    <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
+                      <pre className="text-sm text-gray-800 whitespace-pre-wrap">
+                        {JSON.stringify(playerData, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <div className="text-gray-400 mb-4">
+                  <svg
+                    className="mx-auto h-12 w-12"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Content Selected
+                </h3>
+                <p className="text-gray-500">
+                  Select a content from the list or create a new one to get
+                  started.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;

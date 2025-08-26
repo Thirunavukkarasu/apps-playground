@@ -1,0 +1,31 @@
+{
+  "title": "Text",
+  "description": "Create text-based content with rich formatting options.",
+  "majorVersion": 1,
+  "minorVersion": 1,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "H5P",
+  "license": "MIT",
+  "machineName": "H5P.Text",
+  "preloadedJs": [
+    {
+      "path": "js/text.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/text.css"
+    }
+  ],
+  "semantics": [
+    {
+      "name": "text",
+      "type": "text",
+      "widget": "html",
+      "label": "Text",
+      "description": "Enter your text here",
+      "default": "<p>Enter your text here...</p>"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "h5p-backend",
+  "module": "server.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch server.ts",
+    "start": "bun run server.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.17.0",
+    "@lumieducation/h5p-server": "^10.0.4",
+    "hono": "^4.9.4"
+  }
+}
