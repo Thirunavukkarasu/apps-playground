@@ -1,0 +1,42 @@
+{
+  "name": "@nx-monorepo/todos-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/todos-app/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "apps/todos-app/dist"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "@nx-monorepo/todos-app:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "@nx-monorepo/todos-app:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "@nx-monorepo/todos-app:build:production",
+          "hmr": false
+        }
+      }
+    }
+  },
+  "tags": []
+}
