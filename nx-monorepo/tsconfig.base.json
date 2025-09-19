@@ -16,6 +16,11 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["development"]
+    "customConditions": ["development"],
+    "baseUrl": ".",
+    "paths": {
+      "@nx-monorepo/ui": ["packages/shared-ui/src/index.ts"],
+      "@nx-monorepo/ui/*": ["packages/shared-ui/src/*"]
+    }
   }
 }

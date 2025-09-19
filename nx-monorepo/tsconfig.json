@@ -2,5 +2,15 @@
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./apps/todos-app-e2e"
+    },
+    {
+      "path": "./apps/todos-app"
+    },
+    {
+      "path": "./packages/shared-ui"
+    }
+  ]
 }
