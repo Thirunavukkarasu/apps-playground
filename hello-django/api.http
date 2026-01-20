@@ -1,0 +1,60 @@
+### GET all roles
+GET http://localhost:8000/api/roles?limit=10&offset=0
+
+### GET a role by ID
+GET http://localhost:8000/api/roles/1/
+
+### POST a new role
+POST http://localhost:8000/api/roles/
+Content-Type: application/json
+
+{
+    "name": "admin"
+}
+
+### PUT a role by ID
+PUT http://localhost:8000/api/roles/1/
+Content-Type: application/json
+
+{
+    "name": "admin"
+}
+
+### DELETE a role by ID
+DELETE http://localhost:8000/api/roles/1/
+
+### POST a new permission
+POST http://localhost:8000/api/permissions/
+Content-Type: application/json
+
+{
+    "name": "APP.USERS.APPUSER.CREATE"
+}
+
+### PUT a permission by ID
+PUT http://localhost:8000/api/permissions/1/
+Content-Type: application/json
+
+{
+    "name": "admin"
+}
+
+### DELETE a permission by ID
+DELETE http://localhost:8000/api/permissions/1/
+
+### GET all permissions
+GET http://localhost:8000/api/permissions?limit=10&offset=0
+
+### GET a user by ID
+GET http://localhost:8000/api/users/1/
+
+### POST a new user
+POST http://localhost:8000/api/users/
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "email": "admin@example.com",
+    "roles": [1],
+    "permissions": [1]
+}
