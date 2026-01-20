@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import AppPermission, AppRole, AppUser
+
+admin.site.register(AppRole)
+admin.site.register(AppPermission)
+admin.site.register(AppUser)
